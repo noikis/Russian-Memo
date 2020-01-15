@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'users',
     'cards',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -81,6 +82,8 @@ DATABASES = {
     }
 }
 
+ACCOUNT_EMAIL_REQUIRED = False
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
