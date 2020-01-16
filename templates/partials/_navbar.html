@@ -1,0 +1,75 @@
+{% load static %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">
+            <img src="{% static 'img/logo.png' %}" class="logo" alt="">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <ul class="navbar-nav">
+                <li {% if '/' == request.path %} class="nav-item active mr-3" {% else %} class="nav-item mr-3"
+                    {% endif %}>
+                    <a class="nav-link" href="#">Главная</a>
+                </li>
+                <li {% if 'about' in request.path %} class="nav-item active mr-3" {% else %} class="nav-item mr-3"
+                    {% endif %}>
+                    <a class="nav-link" href="#">О компании</a>
+                </li>
+                <li {% if 'listings' in request.path %} class="nav-item active mr-3" {% else %} class="nav-item mr-3"
+                    {% endif %}>
+                    <a class="nav-link" href="#">Объявления</a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ml-auto">
+                {% if user.is_authenticated %}
+                <li class="dropdown">
+                    <a class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Панель Управления
+                    </a>
+                    <div class="dropdown-menu bg-primary" aria-labelledby="dropdownMenu">
+                        <a class="bg-primary dropdown-item nav-link text-center" href="#">
+                            Мой Дом
+                        </a>
+                        <a class="bg-primary dropdown-item nav-link text-center" href="#">
+                            Забыл Пароль
+                        </a>
+                        <a class="bg-primary dropdown-item nav-link text-center" href="#">
+                            Удалить Аккаунт
+                        </a>
+                    </div>
+
+                </li>
+                <li class="nav-item mr-3">
+                    <a href="javascript:{document.getElementById('logout').submit()}" class="nav-link">
+                        <i class="fas fa-sign-out-alt"></i>Выти
+                    </a>
+                    <form action="#" method="POST" id="logout">
+                        {% csrf_token %}
+                        <input type="hidden">
+                    </form>
+                </li>
+
+                {% else %}
+                <li {% if 'register' in request.path %} class="nav-item active mr-3" {% else %} class="nav-item mr-3"
+                    {% endif %}>
+                    <a class="nav-link" href="{% url 'register' %}">
+                        <i class="fas fa-user-plus"></i> Регистрация</a>
+                </li>
+                <li {% if 'login' in request.path %} class="nav-item active mr-3" {% else %} class="nav-item mr-3"
+                    {% endif %}>
+                    <a class="nav-link" href="{% url 'login' %}">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Войти
+                    </a>
+                </li>
+
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

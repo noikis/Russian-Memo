@@ -1,0 +1,40 @@
+:root {
+  --primary: #30caa0; 
+  --secondary: #10284e;
+}
+
+#header {
+  background: var(--primary);
+  height: 50px;
+  color: white;
+}
+
+#branding h1 {
+  color: white;
+}
+
+div.breadcrumbs {
+  background-color: var(--secondary);
+  color: var(--primary);
+}
+
+a:link,
+a:visited {
+  color: var(--primary);
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+  background-color: var(--secondary);
+}
+
+input[type="submit"].default,
+.submit-row input.default,
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+a.button {
+  background-color: var(--primary);
+}
