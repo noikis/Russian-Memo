@@ -4,6 +4,28 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager, Permission
 
 class UserManager(BaseUserManager):
 
+    def create_user(self, username, email, first_name, last_name, is_student, is_teacher,  password=None):
+        if not email:
+            raise ValueError('Электронная почта объязательнная.')
+
+        user = self.model(
+            username=username,
+            email=self.normalize_email(email),
+            first_name=first_name,
+            last_name=last_name,
+        )
+
+        user.set_password(password)
+        user.is_student = is_student
+        user.is_teacher = is_teacher
+
+        user.is_admin = False
+        user.is_superuser = False
+        user.is_staff = False
+        user.save(using=self._db)
+        # "using=self._db" -> save it in this database
+        return user
+
     def create_superuser(self, username, email, password=None):
         user = self.model(username=username)
         user.set_password(password)
@@ -26,27 +48,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
-
-class Student(User):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, parent_link=True)
-
-    def __str__(self):
-        return self.username
-
-    class Meta:
-        verbose_name = 'Студент'
-        verbose_name_plural = 'Студенты'
-
-
-class Teacher(User):
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, parent_link=True)
-
-    def __str__(self):
-        return self.username
-
-    class Meta:
-        verbose_name = 'Преподователь'
-        verbose_name_plural = 'Преподователи'

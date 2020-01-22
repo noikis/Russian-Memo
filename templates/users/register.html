@@ -6,7 +6,8 @@
 {% endblock %}
 {% block content %}
 <link rel="stylesheet" href="{% static 'css/register.css' %}"">
-<div class=" container register">
+<div class=" container register bg-light">
+{% include 'partials/_alert.html' %}
 <div class="row">
     <div class="col-md-3 register-left">
         <img src="https://image.ibb.co/n7oTvU/logo_white.png" alt="" />
@@ -28,36 +29,39 @@
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
                 <h3 class="register-heading">Apply as a Student</h3>
-                <div class="row register-form">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="First Name *" value="" />
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Last Name *" value="" />
-                        </div>
-                        <div class="form-group">
-                            <input type="email" class="form-control" placeholder="Email *" value="" />
-                        </div>
+                <form action="{% url 'register_student' %}" class="register-form" method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="First Name *" name="first_name" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Last Name *" name="last_name" />
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" placeholder="Login *" name="username" />
+                            </div>
 
 
 
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <input type="email" class="form-control" placeholder="Email *" name="email" />
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Password *" name="password" />
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" placeholder="Confirm Password *"
+                                    name="password2" />
+                            </div>
+
+                            <input type="submit" class="btnRegister" value="Register" />
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <input type="text" maxlength="10" minlength="10" class="form-control" placeholder="Phone *"
-                                value="" />
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control" placeholder="Password *" value="" />
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control" placeholder="Confirm Password *" value="" />
-                        </div>
-
-                        <input type="submit" class="btnRegister" value="Register" />
-                    </div>
-                </div>
+                </form>
             </div>
             <div class="tab-pane fade show" id="profile" role="tabpanel" aria-labelledby="profile-tab">
                 <h3 class="register-heading">Apply as a Teacher</h3>
@@ -70,7 +74,7 @@
                             <input type="text" class="form-control" placeholder="Last Name *" value="" />
                         </div>
                         <div class="form-group">
-                            <input type="email" class="form-control" placeholder="Email *" value="" />
+                            <input type="text" class="form-control" placeholder="Login *" value="" />
                         </div>
 
 
@@ -78,7 +82,7 @@
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
-                            <input type="text" maxlength="10" minlength="10" class="form-control" placeholder="Phone *"
+                            <input type="email" maxlength="10" minlength="10" class="form-control" placeholder="Email *"
                                 value="" />
                         </div>
                         <div class="form-group">
