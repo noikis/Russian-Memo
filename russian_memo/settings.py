@@ -103,9 +103,18 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Django Auth Settings
 ACCOUNT_EMAIL_REQUIRED = False
 
 AUTH_USER_MODEL = 'account.User'
+
+LOGIN_URL = 'login'
+
+LOGOUT_URL = 'logout'
+
+LOGIN_REDIRECT_URL = 'home'
+
+LOGOUT_REDIRECT_URL = 'home'
 
 
 # Internationalization
@@ -136,6 +145,7 @@ STATICFILES_DIRS = [
 
 # MEDIA folder
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 MEDIA_URL = '/media/'
 
 # Default layout to use with "crispy_forms"

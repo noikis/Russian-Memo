@@ -8,7 +8,9 @@
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="{% url 'home' %}">Home</a></li>
                 <li><a href="{% url 'student_registration' %}">Registration</a></li>
-                <li><a href="#">JavaScript</a></li>
+                {% if request.user.is_authenticated %}
+                <li><a href="{% url 'logout' %}">Log Out</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>
@@ -34,9 +36,9 @@
         </a>
     </li>
     <li>
-        <a href="#" class="black-text">
+        <a href="{% url 'logout' %}" class="black-text">
             <i class="material-icons black-text ">place</i>
-            Адресс
+            Logout
         </a>
     </li>
 

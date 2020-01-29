@@ -1,4 +1,5 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, authenticate, logout
+from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.views.generic import CreateView
 
@@ -19,3 +20,36 @@ class StudentSignUpView(CreateView):
         user = form.save()
         login(self.request, user)
         return render(self.request, 'pages/index.html')
+
+
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        # authentification
+        user = authenticate(username=username, password=password)
+
+        # if user is in the Database
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'Вы зарегистрированны!')
+            return redirect('dashboard')
+        # user not Found
+        else:
+            messages.error(request, "'Введенные данны не совпадают")
+            return redirect('login')
+
+    # accessing the login page
+    else:
+        return render(request, 'account/login.html')
+
+
+def logout_view(request):
+    if request.method == 'POST':
+        logout(request)
+        # messages.success(request, "Вы вышли")
+        return redirect('index')
+
+
+def dashboard(request):
+    return render(request, 'account/dashboard.html')
