@@ -7,5 +7,5 @@ from .views import index
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls')),
-    path('', index,  name='index'),
+    path('', index,  name='home'),
 ]

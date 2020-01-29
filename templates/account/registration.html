@@ -5,20 +5,12 @@
 
 {% block content %}
 <div class="row">
-    <div class="col-md-8 col-sm-10 col-12">
-        <h2>Sign up as a Student</h2>
-        <form method="post" novalidate>
-            {% csrf_token %}
-            {{ form }}
-            <button type="submit" class="btn btn-success">Sign up</button>
-        </form>
-    </div>
+    <h2>Sign up as a Student</h2>
+    <form method="post" novalidate class="col s12">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit" class="btn">Sign up</button>
+    </form>
 </div>
-<script>
-    const helpers = document.querySelectorAll('.helptext');
-    for (const helper of helpers) {
-        helper.style.display = "none";
-    }
 
-</script>
-{% endblock %}
+{% endblock content %}

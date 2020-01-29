@@ -1,0 +1,43 @@
+<nav>
+    <div class="nav-wrapper indigo darken-2">
+        <div class="container">
+            <a href="#" class="brand-logo">Logo</a>
+            <a href="#" class="sidenav-trigger" data-target="mobile-nav">
+                <i class="material-icons">menu</i>
+            </a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="{% url 'home' %}">Home</a></li>
+                <li><a href="{% url 'student_registration' %}">Registration</a></li>
+                <li><a href="#">JavaScript</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Side Nav -->
+<ul class="sidenav" id="mobile-nav">
+    <li>
+        <h4 class="deep-purple-text center">Russian Memo</h4>
+    </li>
+    <li>
+        <div class="divider"></div>
+    </li>
+    <li>
+
+        <a href="{% url 'home' %}" class="black-text">
+            <i class="material-icons black-text">home</i>Home
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'student_registration' %}" class="black-text">
+            <i class="material-icons black-text">event_seat</i> Student Registration
+        </a>
+    </li>
+    <li>
+        <a href="#" class="black-text">
+            <i class="material-icons black-text ">place</i>
+            Адресс
+        </a>
+    </li>
+
+</ul>
