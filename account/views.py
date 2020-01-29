@@ -45,10 +45,9 @@ def login_view(request):
 
 
 def logout_view(request):
-    if request.method == 'POST':
-        logout(request)
-        # messages.success(request, "Вы вышли")
-        return redirect('index')
+    logout(request)
+    # messages.success(request, "Вы вышли")
+    return render(request, 'pages/index.html')
 
 
 def dashboard(request):
