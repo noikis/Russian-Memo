@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'words',
     'account',
     'crispy_forms',
     'crispy_forms_materialize',
@@ -150,3 +151,21 @@ MEDIA_URL = '/media/'
 
 # Default layout to use with "crispy_forms"
 CRISPY_TEMPLATE_PACK = 'materialize_css_forms'
+
+MATERIAL_ADMIN_SITE = {
+    'HEADER':  'Russian Memo',  # Admin site header
+    'TITLE': ('Russian Memo'),  # Admin site title
+    'SHOW_THEMES':  True,  # Show default admin themes button
+    'TRAY_REVERSE': True,  # Hide object-tools and additional-submit-line by default
+    'SHOW_COUNTS': True,  # Show instances counts for each model
+    'APP_ICONS': {  # Set icons for applications(lowercase), including 3rd party apps, {'application_name': 'material_icon_name', ...}
+        'account': 'people',
+        'words': 'language',
+    },
+    'MODEL_ICONS': {
+        # Set icons for models(lowercase), including 3rd party models, {'model_name': 'material_icon_name',
+        'student': 'school',
+        'deck': 'library_books',
+        'card': 'book',
+    }
+}
