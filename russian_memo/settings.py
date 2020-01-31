@@ -167,5 +167,6 @@ MATERIAL_ADMIN_SITE = {
         'student': 'school',
         'deck': 'library_books',
         'card': 'book',
+        'level': 'present_to_all',
     }
 }
