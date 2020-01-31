@@ -15,6 +15,7 @@
     <h2>Sign up as a Student</h2>
     <form method="post" novalidate class="col s12">
         {% csrf_token %}
+        <input type="hidden" name="next" value="{{ next }}">
 
         {{ form.non_field_errors }}
         {{ form.username.errors }}

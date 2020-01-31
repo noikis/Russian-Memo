@@ -1,10 +1,12 @@
-from django.contrib.auth import login, authenticate, logout
-from django.contrib import messages
 from django.shortcuts import redirect, render
+from django.contrib import messages
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView
 
-from .forms import StudentSignUpForm, TeacherSignUpForm
 from .models import User
+from .forms import StudentSignUpForm, TeacherSignUpForm
+from .decorators import student_required, teacher_required
 
 
 class StudentSignUpView(CreateView):
@@ -65,5 +67,6 @@ def logout_view(request):
     return render(request, 'pages/index.html')
 
 
+@login_required
 def dashboard(request):
     return render(request, 'account/dashboard.html')
