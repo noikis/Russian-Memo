@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'quiz',
     'words',
     'account',
     'crispy_forms',
@@ -165,8 +166,8 @@ MATERIAL_ADMIN_SITE = {
     'MODEL_ICONS': {
         # Set icons for models(lowercase), including 3rd party models, {'model_name': 'material_icon_name',
         'student': 'school',
-        'deck': 'library_books',
-        'card': 'book',
+        'deck': 'bookmarks',
+        'card': 'bookmark',
         'level': 'present_to_all',
     }
 }
