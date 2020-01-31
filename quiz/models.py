@@ -1,14 +1,12 @@
 from django.db import models
 
-from account.models import User, Level
+from account.models import User
 
 
 class Quiz(models.Model):
     owner = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name='quizzes')
     name = models.CharField(max_length=255)
-    level = models.ForeignKey(
-        Level, on_delete=models.CASCADE, related_name='quizzes')
 
     def __str__(self):
         return self.name

@@ -1,10 +1,12 @@
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
-from django.views.generic import CreateView
+from django.utils.decorators import method_decorator
+from django.views.generic import CreateView, UpdateView
 
-from .models import User
+from .models import User, Student
 from .forms import StudentSignUpForm, TeacherSignUpForm
 from .decorators import student_required, teacher_required
 
@@ -37,6 +39,21 @@ class TeacherSignUpView(CreateView):
         user = form.save()
         login(self.request, user)
         return render(self.request, 'pages/index.html')
+
+
+# @method_decorator([login_required, student_required], name='dispatch')
+# class StudentLevelView(UpdateView):
+#     model = Student
+#     form_class = StudentLevelForm
+#     template_name = 'classroom/students/interests_form.html'
+#     success_url = reverse_lazy('dashboard')
+
+#     def get_object(self):
+#         return self.request.user.student
+
+#     def form_valid(self, form):
+#         messages.success(self.request, 'Interests updated with success!')
+#         return super().form_valid(form)
 
 
 def login_view(request):

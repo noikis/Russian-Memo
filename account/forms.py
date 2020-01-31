@@ -4,19 +4,7 @@ from django.db import transaction
 from django.forms.utils import ValidationError
 
 from crispy_forms.helper import FormHelper
-from .models import User, Student, Level
-
-
-class TeacherSignUpForm(UserCreationForm):
-    class Meta(UserCreationForm.Meta):
-        model = User
-
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.is_teacher = True
-        if commit:
-            user.save()
-        return user
+from .models import User, Student
 
 
 class TeacherSignUpForm(UserCreationForm):
@@ -32,11 +20,6 @@ class TeacherSignUpForm(UserCreationForm):
 
 
 class StudentSignUpForm(UserCreationForm):
-    levels = forms.ModelMultipleChoiceField(
-        queryset=Level.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
-        required=True
-    )
 
     class Meta(UserCreationForm.Meta):
         model = User

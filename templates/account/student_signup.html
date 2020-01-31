@@ -38,11 +38,6 @@
             {{ form.password2 }}
             <label for={{ form.password2.id_for_label }}>Password Confirmation</label>
         </div>
-        {% for field in form.levels %}
-        <p>
-            {{ field }}
-        </p>
-        {% endfor %}
         <button type="submit" class="btn">Sign up</button>
     </form>
 </div>
