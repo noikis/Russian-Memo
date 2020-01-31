@@ -18,8 +18,9 @@
                     </a>
                 </li>
                 {% else %}
-                <li><a href="{% url 'student_registration' %}">Registration</a></li>
-                <li><a href="{% url 'login' %}">Login</a></li>
+                <li><a href="{% url 'student_registration' %}">Student Signup</a></li>
+                <li><a href="{% url 'teacher_registration' %}">Teacher Signup</a></li>
+                <li><a href="{% url 'login' %}">Sign In</a></li>
 
                 {% endif %}
             </ul>
@@ -42,11 +43,6 @@
             <i class="material-icons black-text">home</i>Home
         </a>
     </li>
-    <li>
-        <a href="{% url 'student_registration' %}" class="black-text">
-            <i class="material-icons black-text">event_seat</i> Student Registration
-        </a>
-    </li>
     {% if request.user.is_authenticated %}
     <li>
         <a href="{% url 'dashboard' %}" class="black-text">
@@ -58,6 +54,22 @@
         <a href="{% url 'logout' %}" class="black-text">
             <i class="material-icons black-text ">exit_to_app</i>
             Logout
+        </a>
+    </li>
+    {% else %}
+    <li>
+        <a href="{% url 'student_registration' %}" class="black-text">
+            <i class="material-icons black-text">event_seat</i> Student Registration
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'teacher_registration' %}" class="black-text">
+            <i class="material-icons black-text">event_seat</i> Teacher Registration
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'login' %}" class="black-text">
+            <i class="material-icons black-text">event_seat</i> Sign In
         </a>
     </li>
     {% endif %}
