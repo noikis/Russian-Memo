@@ -1,7 +1,6 @@
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
-from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
+from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView
@@ -22,7 +21,7 @@ class StudentSignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user)
+        auth.login(self.request, user)
         return render(self.request, 'pages/index.html')
 
 
@@ -37,49 +36,34 @@ class TeacherSignUpView(CreateView):
 
     def form_valid(self, form):
         user = form.save()
-        login(self.request, user)
+        auth.login(self.request, user)
         return render(self.request, 'pages/index.html')
 
 
-# @method_decorator([login_required, student_required], name='dispatch')
-# class StudentLevelView(UpdateView):
-#     model = Student
-#     form_class = StudentLevelForm
-#     template_name = 'classroom/students/interests_form.html'
-#     success_url = reverse_lazy('dashboard')
-
-#     def get_object(self):
-#         return self.request.user.student
-
-#     def form_valid(self, form):
-#         messages.success(self.request, 'Interests updated with success!')
-#         return super().form_valid(form)
-
-
-def login_view(request):
+def login(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         # authentification
-        user = authenticate(username=username, password=password)
+        user = auth.authenticate(username=username, password=password)
 
         # if user is in the Database
         if user is not None:
-            login(request, user)
+            auth.login(request, user)
             messages.success(request, 'Вы зарегистрированны!')
-            return redirect('dashboard')
+            return redirect('account:dashboard')
         # user not Found
         else:
             messages.error(request, "'Введенные данны не совпадают")
-            return redirect('login')
+            return redirect('account:login')
 
     # accessing the login page
     else:
         return render(request, 'account/login.html')
 
 
-def logout_view(request):
-    logout(request)
+def logout(request):
+    auth.logout(request)
     # messages.success(request, "Вы вышли")
     return render(request, 'pages/index.html')
 

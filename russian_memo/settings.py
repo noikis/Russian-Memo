@@ -110,7 +110,7 @@ ACCOUNT_EMAIL_REQUIRED = False
 
 AUTH_USER_MODEL = 'account.User'
 
-LOGIN_URL = 'login'
+# LOGIN_URL = 'account/login/'
 
 LOGOUT_URL = 'logout'
 
