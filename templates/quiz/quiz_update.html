@@ -11,7 +11,7 @@
             {{ form }}
             <button type="submit" class="btn btn-success">Save changes</button>
             <a href="{% url 'quiz:quiz_list' %}" class="btn btn-outline-secondary" role="button">Nevermind</a>
-            <a href="#" class="btn btn-danger float-right">Delete</a>
+            <a href="{% url 'quiz:quiz_delete' quiz.pk %}" class="btn red float-right">Delete</a>
         </form>
     </div>
 </div>

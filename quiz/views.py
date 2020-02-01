@@ -1,9 +1,10 @@
 from django import forms
 from django.shortcuts import render, redirect, reverse
+from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from django.db.models import Count
 
 
@@ -61,3 +62,20 @@ class QuizUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('quiz:quiz_update', kwargs={'pk': self.object.pk})
+
+
+@method_decorator([login_required, teacher_required], name='dispatch')
+class QuizDeleteView(DeleteView):
+    model = Quiz
+    context_object_name = 'quiz'
+    template_name = 'quiz/quiz_delete_confirm.html'
+    success_url = reverse_lazy('quiz:quiz_list')
+
+    def delete(self, request, *args, **kwargs):
+        quiz = self.get_object()
+        messages.success(
+            request, 'The quiz %s was deleted with success!' % quiz.name)
+        return super().delete(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.request.user.quizzes.all()
