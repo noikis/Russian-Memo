@@ -8,6 +8,11 @@
             <ul id="nav-mobile" class="right hide-on-med-and-down">
                 <li><a href="{% url 'home' %}">Home</a></li>
                 {% if request.user.is_authenticated %}
+                {% if request.user.is_teacher %}
+                <li>
+                    <a href="{% url 'quiz:quiz_list' %}"> my Quizzes</a>
+                </li>
+                {% endif %}
 
                 <li>
                     <a href="{% url 'account:dashboard' %}"> Dashboard</a>

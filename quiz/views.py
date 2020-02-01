@@ -1,5 +1,5 @@
 from django import forms
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -10,6 +10,7 @@ from django.db.models import Count
 
 from account.decorators import teacher_required
 from .models import Quiz
+from .forms import QuestionForm
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')
@@ -79,3 +80,25 @@ class QuizDeleteView(DeleteView):
 
     def get_queryset(self):
         return self.request.user.quizzes.all()
+
+
+@login_required
+@teacher_required
+def question_add(request, pk):
+
+    quiz = get_object_or_404(Quiz, pk=pk, owner=request.user)
+
+    if request.method == 'POST':
+        form = QuestionForm(request.POST)
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.quiz = quiz
+            question.save()
+            messages.success(
+                request, 'You may now add answers/options to the question.')
+            return redirect('quiz:quiz_list', )
+            # quiz.pk, question.pk
+    else:
+        form = QuestionForm()
+
+    return render(request, 'quiz/question_add.html', {'quiz': quiz, 'form': form})

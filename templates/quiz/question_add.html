@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+</nav>
+<h2 class="mb-3">Add a new question</h2>
+<p class="lead">Add first the text of the question. In the next step you will be able to add the possible answers.</p>
+<form method="post" novalidate>
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="btn btn-success">Save</button>
+    <a href="{% url 'quiz:quiz_update' quiz.pk %}" class="btn btn-outline-secondary" role="button">Nevermind</a>
+</form>
+{% endblock %}
