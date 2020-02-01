@@ -169,5 +169,8 @@ MATERIAL_ADMIN_SITE = {
         'deck': 'bookmarks',
         'card': 'bookmark',
         'level': 'present_to_all',
+        'question': 'not_listed_location',
+        'answer': 'format_list_numbered',
+        'quiz': 'list_alt',
     }
 }
