@@ -21,8 +21,10 @@
         <tbody>
             {% for quiz in quizzes %}
             <tr>
-                <td class="align-middle"><a href='#'>{{ quiz.name }}</a></td>
-                <td class="align-middle">{{ quiz.questions_count }}</td>
+                <td class="align-middle">
+                    <a href="{% url 'quiz:quiz_update' quiz.pk %}"">{{ quiz.name }}</a>
+                </td>
+                <td class=" align-middle">{{ quiz.questions_count }}</td>
                 <td class="text-right">
                     <a href="#" class="btn">View results</a>
                 </td>

@@ -1,9 +1,9 @@
 from django import forms
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView
+from django.views.generic import CreateView, ListView, UpdateView
 from django.db.models import Count
 
 
@@ -37,3 +37,27 @@ class QuizListView(ListView):
         queryset = self.request.user.quizzes \
             .annotate(questions_count=Count('questions', distinct=True))
         return queryset
+
+
+@method_decorator([login_required, teacher_required], name='dispatch')
+class QuizUpdateView(UpdateView):
+    model = Quiz
+    fields = ('name', )
+    context_object_name = 'quiz'
+    template_name = 'quiz/quiz_update.html'
+
+    def get_context_data(self, **kwargs):
+        kwargs['questions'] = self.get_object().questions.annotate(
+            answers_count=Count('answers'))
+        return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        '''
+        This method is an implicit object-level permission management
+        This view will only match the ids of existing quizzes that belongs
+        to the logged in user.
+        '''
+        return self.request.user.quizzes.all()
+
+    def get_success_url(self):
+        return reverse('quiz:quiz_update', kwargs={'pk': self.object.pk})
