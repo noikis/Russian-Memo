@@ -4,6 +4,7 @@ from .views.teachers import (QuizCreateView, QuizListView, QuizUpdateView,
                              QuizDeleteView, QuestionDeleteView, question_add, question_update)
 
 from .views.students import QuizListView as StudentQuizListView
+from .views.students import take_quiz
 app_name = 'quiz'
 
 urlpatterns = [
@@ -19,5 +20,7 @@ urlpatterns = [
          QuestionDeleteView.as_view(), name='question_delete'),
     # student urls
     path('list/', StudentQuizListView.as_view(), name='quiz_list_student'),
+    path('take_quiz/<int:pk>/', take_quiz, name='take_quiz'),
+
 
 ]
