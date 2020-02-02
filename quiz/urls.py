@@ -3,9 +3,11 @@ from django.urls import path, include
 from .views.teachers import (QuizCreateView, QuizListView, QuizUpdateView,
                              QuizDeleteView, QuestionDeleteView, question_add, question_update)
 
+from .views.students import QuizListView as StudentQuizListView
 app_name = 'quiz'
 
 urlpatterns = [
+    # teacher urls
     path('', QuizListView.as_view(), name='quiz_list'),
     path('add/', QuizCreateView.as_view(), name='add_quiz'),
     path('<int:pk>/', QuizUpdateView.as_view(), name='quiz_update'),
@@ -15,4 +17,7 @@ urlpatterns = [
          question_update, name='question_update'),
     path('<int:quiz_pk>/question/<int:question_pk>/delete',
          QuestionDeleteView.as_view(), name='question_delete'),
+    # student urls
+    path('list/', StudentQuizListView.as_view(), name='quiz_list_student'),
+
 ]
