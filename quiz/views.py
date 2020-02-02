@@ -5,12 +5,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.db import transaction
 from django.db.models import Count
 
 
 from account.decorators import teacher_required
-from .models import Quiz
-from .forms import QuestionForm
+from .models import Quiz, Question, Answer
+from .forms import QuestionForm, BaseAnswerInlineFormSet
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')
@@ -102,3 +103,43 @@ def question_add(request, pk):
         form = QuestionForm()
 
     return render(request, 'quiz/question_add.html', {'quiz': quiz, 'form': form})
+
+
+@login_required
+@teacher_required
+def question_update(request, quiz_pk, question_pk):
+
+    quiz = get_object_or_404(Quiz, pk=quiz_pk, owner=request.user)
+    question = get_object_or_404(Question, pk=question_pk, quiz=quiz)
+
+    AnswerFormSet = forms.inlineformset_factory(
+        Question,  # parent model
+        Answer,  # base model
+        formset=BaseAnswerInlineFormSet,
+        fields=('text', 'is_correct'),
+        min_num=2,
+        validate_min=True,
+        max_num=10,
+        validate_max=True
+    )
+
+    if request.method == 'POST':
+        form = QuestionForm(request.POST, instance=question)
+        formset = AnswerFormSet(request.POST, instance=question)
+        if form.is_valid() and formset.is_valid():
+            with transaction.atomic():
+                form.save()
+                formset.save()
+            messages.success(
+                request, 'Question and answers saved with success!')
+            return redirect('quiz:quiz_update', quiz.pk)
+    else:
+        form = QuestionForm(instance=question)
+        formset = AnswerFormSet(instance=question)
+
+    return render(request, 'quiz/question_update.html', {
+        'quiz': quiz,
+        'question': question,
+        'form': form,
+        'formset': formset
+    })

@@ -16,8 +16,18 @@
     </div>
 </div>
 
-<div class="card-footer">
-    <a href="#" class="btn btn-primary btn-sm">Add question</a>
+<div class="fixed-action-btn">
+    <a href="{% url 'quiz:question_add' quiz.pk %}" class="btn-floating btn-large waves-effect waves-light red">
+        <i class="material-icons">add</i>
+    </a>
 </div>
 </div>
+<ul class="collapsible">
+    {% for quiz in quizzes %}
+    <li>
+        <div class="collapsible-header"><i class="material-icons">filter_drama</i>{{ quiz.name }}</div>
+        <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+    </li>
+    {% endfor %}
+</ul>
 {% endblock %}
