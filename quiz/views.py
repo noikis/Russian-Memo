@@ -83,6 +83,32 @@ class QuizDeleteView(DeleteView):
         return self.request.user.quizzes.all()
 
 
+@method_decorator([login_required, teacher_required], name='dispatch')
+class QuestionDeleteView(DeleteView):
+    model = Question
+    context_object_name = 'question'
+    template_name = 'quiz/question_delete_confirm.html'
+    pk_url_kwarg = 'question_pk'
+
+    def get_context_data(self, **kwargs):
+        question = self.get_object()
+        kwargs['quiz'] = question.quiz
+        return super().get_context_data(**kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        question = self.get_object()
+        messages.success(
+            request, 'The question %s was deleted with success!' % question.text)
+        return super().delete(request, *args, **kwargs)
+
+    def get_queryset(self):
+        return Question.objects.filter(quiz__owner=self.request.user)
+
+    def get_success_url(self):
+        question = self.get_object()
+        return reverse('quiz:quiz_update', kwargs={'pk': question.quiz_id})
+
+
 @login_required
 @teacher_required
 def question_add(request, pk):

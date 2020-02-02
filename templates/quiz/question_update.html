@@ -10,88 +10,31 @@
         opacity: 1;
     }
 
-    [type="checkbox"]:not(:checked):hover,
-    [type="checkbox"]:checked:hover {
+    [type="checkbox"]:not(:checked),
+    [type="checkbox"]:checked {
         cursor: pointer;
+        opacity: 1;
+    }
+
+    .answer {
+        padding-bottom: 10px;
+        border-bottom: solid 2px #333;
     }
 </style>
 
-<h2 class="mb-3">{{ question.txt }}</h2>
-<form method="post" novalidate>
+<form method="POST" action="{% url 'quiz:question_update' quiz.pk question.pk %}">
     {% csrf_token %}
+
     {{ formset.management_form }}
-
     {{ form }}
-    <div class="card mb-3{% if formset.errors %} border-danger{% endif %}">
-        <div class="card-header">
-            <div class="row">
-                <div class="col s8">
-                    <strong>Answers</strong>
-                </div>
-                <div class="col s2">
-                    <strong>Correct?</strong>
-                </div>
-                <div class="col s2">
-                    <strong>Delete?</strong>
-                </div>
-            </div>
-        </div>
-        {% for error in formset.non_form_errors %}
-        <div class="card-body bg-danger border-danger text-white py-2">{{ error }}</div>
-        {% endfor %}
-        {% for form in formset %}
-        <div class="row">
-            <div class="col s8">
-                {{ form.text }}
-            </div>
-            <div class="col s2">
-                <label for="{{ form.is_correct.id_for_label }}">
-                    <i class="material-icons">check_box</i>
-                </label>
-                {{ form.is_correct }}
-            </div>
-            <div class="col s2">
-                {% if form.instance.pk %}
-                <label for="{{ form.DELETE.id_for_label }}">
-                    <i class="material-icons">check_box</i>
-                </label>
-                {{ form.DELETE }}
-                {% endif %}
-            </div>
-        </div>
-
-        <br>
-        {% endfor %}
-        <!-- <div class="list-group list-group-flush list-group-formset">
+    <div class="card">
+        <div class="card-content">
             {% for form in formset %}
-            <div class="list-group-item">
-                <div class="row">
-                    <div class="col s8">
-                        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-                        {{ form.text }}
-                        {% if form.instance.pk and form.text.value != form.instance.text %}<p class="mb-0 mt-1"><small
-                                class="text-muted font-italic"><strong>Old answer:</strong>
-                                {{ form.instance.text }}</small></p>{% endif %}
-                    </div>
-                    <div class="col s2">
-                        {{ form.is_correct }}
-                    </div>
-                    <div class="col s2">
-                        {% if form.instance.pk %}
-                        {{ form.DELETE }}
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            {% endfor %} -->
+            <p class="answer">
+                {{ form }}
+            </p>
+            {% endfor %}
+        </div>
     </div>
-    </div>
-    <p>
-        <small class="form-text text-muted">Your question may have at least <strong>2</strong> answers and maximum
-            <strong>10</strong> answers. Select at least one correct answer.</small>
-    </p>
-    <button type="submit" class="btn btn-success">Save changes</button>
-    <a href="{% url 'quiz:quiz_update' quiz.pk %}" class="btn btn-outline-secondary" role="button">Nevermind</a>
-    <a href="#" class="btn btn-danger float-right">Delete</a>
-</form>
-{% endblock %}
+    <input type="submit" value="submit" class="btn">
+    {% endblock %}

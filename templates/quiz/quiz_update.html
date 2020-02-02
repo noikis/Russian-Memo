@@ -21,13 +21,15 @@
         <i class="material-icons">add</i>
     </a>
 </div>
-</div>
+
 <ul class="collapsible">
-    {% for quiz in quizzes %}
+    {% for question in questions %}
     <li>
-        <div class="collapsible-header"><i class="material-icons">filter_drama</i>{{ quiz.name }}</div>
-        <div class="collapsible-body"><span>Lorem ipsum dolor sit amet.</span></div>
+        <a href="{% url 'quiz:question_update' quiz.pk question.pk %}" class="collapsible-header">
+            <i class="material-icons">filter_drama</i>{{ question.text }}
+        </a>
     </li>
     {% endfor %}
 </ul>
+</div>
 {% endblock %}

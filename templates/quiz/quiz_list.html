@@ -26,7 +26,7 @@
                 </td>
                 <td class=" align-middle">{{ quiz.questions_count }}</td>
                 <td class="text-right">
-                    <a href="#" class="btn">View results</a>
+                    <a href="{% url 'quiz:question_add' quiz.id %}" class="btn">Add question</a>
                 </td>
             </tr>
             {% empty %}
