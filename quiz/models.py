@@ -43,6 +43,9 @@ class TakenQuiz(models.Model):
     percentage = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name_plural = "Taken Quizzes"
+
 
 class StudentAnswer(models.Model):
     student = models.ForeignKey(
