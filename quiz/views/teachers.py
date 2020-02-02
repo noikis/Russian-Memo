@@ -10,8 +10,8 @@ from django.db.models import Count
 
 
 from account.decorators import teacher_required
-from .models import Quiz, Question, Answer
-from .forms import QuestionForm, BaseAnswerInlineFormSet
+from ..models import Quiz, Question, Answer
+from ..forms import QuestionForm, BaseAnswerInlineFormSet
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')
