@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="output"></div>
+
+<script>
+    function getCards() {
+        fetch("http://127.0.0.1:8000/api/cards/")
+            .then((res) => res.json())
+            .then((data) => {
+                let output = "<h2>Cards</h2>"
+                data.forEach(card => {
+                    output += `
+                   <ul>
+                       <li>id: ${card.pk}<li>
+                        <li>word: ${card.fields.word}<li>
+                   </ul>
+                   `
+
+                })
+                document.querySelector("#output").innerHTML = output;
+            })
+    }
+    getCards()
+</script>
+{% endblock %}
