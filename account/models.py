@@ -14,3 +14,11 @@ class Student(models.Model):
 
     def __str__(self):
         return self.user.username
+
+    def get_all_cards(self, Card):
+        queryset = Card.objects.filter(deck__student__user=self.user)
+        return queryset
+
+    def get_all_decks(self, Deck):
+        queryset = Deck.objects.filter(student__user=self.user)
+        return queryset
