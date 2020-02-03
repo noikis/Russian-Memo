@@ -4,9 +4,9 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, Avg
 
 
 from account.decorators import teacher_required
@@ -107,6 +107,30 @@ class QuestionDeleteView(DeleteView):
     def get_success_url(self):
         question = self.get_object()
         return reverse('quiz:quiz_update', kwargs={'pk': question.quiz_id})
+
+
+@method_decorator([login_required, teacher_required], name='dispatch')
+class QuizResultsView(DetailView):
+    model = Quiz
+    context_object_name = 'quiz'
+    template_name = 'quiz/teachers/quiz_results.html'
+
+    def get_context_data(self, **kwargs):
+        quiz = self.get_object()
+        taken_quizzes = quiz.taken_quizzes.select_related(
+            'student__user').order_by('-date')
+        total_taken_quizzes = taken_quizzes.count()
+        quiz_score = quiz.taken_quizzes.aggregate(average_score=Avg('score'))
+        extra_context = {
+            'taken_quizzes': taken_quizzes,
+            'total_taken_quizzes': total_taken_quizzes,
+            'quiz_score': quiz_score
+        }
+        kwargs.update(extra_context)
+        return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        return self.request.user.quizzes.all()
 
 
 @login_required
