@@ -30,6 +30,18 @@ class QuizListView(ListView):
         return queryset
 
 
+@method_decorator([login_required, student_required], name='dispatch')
+class TakenQuizListView(ListView):
+    model = TakenQuiz
+    context_object_name = 'taken_quizzes'
+    template_name = 'quiz/students/taken_quiz.html'
+
+    def get_queryset(self):
+        queryset = self.request.user.student.taken_quizzes \
+            .order_by('quiz__name')
+        return queryset
+
+
 @login_required
 @student_required
 def take_quiz(request, pk):
@@ -75,7 +87,7 @@ def take_quiz(request, pk):
     else:
         form = TakeQuizForm(question=question)
 
-    return render(request, 'quiz/students/take_quiz_form.html', {
+    return render(request, 'quiz/students /take_quiz_form.html', {
         'quiz': quiz,
         'question': question,
         'form': form,
