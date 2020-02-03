@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>{{quiz.name}}</h2>
+
+<div class="progress">
+    <div class="determinate" role="progressbar" style="width: {{percentage}}%" aria-valuenow="{{percentage}}"
+        aria-valuemin="0" aria-valuemax="100">{{percentage}}%</div>
+</div>
+<hr>
+{% for question in questions %}
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">{{forloop.counter}}. {{question.text}}</h5>
+        <table class="table table-bordered table-sm">
+            <thead>
+                <tr>
+                    <th>Yours</th>
+                    <th>Correct</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for opt in question.answers.all %}
+                <tr>
+                    <td>{{opt.text}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<br>
+{% endfor %}
+{% endblock %}

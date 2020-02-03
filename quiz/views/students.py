@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, UpdateView, View
 from django.db import transaction
 from django.db.models import Count, Sum
 
@@ -40,6 +40,30 @@ class TakenQuizListView(ListView):
         queryset = self.request.user.student.taken_quizzes \
             .order_by('quiz__name')
         return queryset
+
+
+@method_decorator([login_required, student_required], name='dispatch')
+class QuizResultsView(View):
+    template_name = 'quiz/students/quiz_result.html'
+
+    def get(self, request, *args, **kwargs):
+        quiz = Quiz.objects.get(id=kwargs['pk'])
+        taken_quiz = TakenQuiz.objects.filter(
+            student=request.user.student, quiz=quiz)
+        if not taken_quiz:
+            """
+            Don't show the result if the user didn't attempted the quiz
+            """
+            return redirect('quiz:dashboard')
+        questions = Question.objects.filter(quiz=quiz)
+
+        # questions = self.form_class(initial=self.initial)
+        context = {
+            'questions': questions,
+            'quiz': quiz,
+            'percentage': taken_quiz[0].percentage
+        }
+        return render(request, self.template_name, context)
 
 
 @login_required

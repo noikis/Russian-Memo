@@ -4,7 +4,7 @@ from .views.teachers import (QuizCreateView, QuizListView, QuizUpdateView,
                              QuizDeleteView, QuestionDeleteView, question_add, question_update)
 
 from .views.students import QuizListView as StudentQuizListView
-from .views.students import take_quiz, TakenQuizListView
+from .views.students import take_quiz, TakenQuizListView, QuizResultsView
 app_name = 'quiz'
 
 urlpatterns = [
@@ -22,6 +22,7 @@ urlpatterns = [
     path('list/', StudentQuizListView.as_view(), name='quiz_list_student'),
     path('take_quiz/<int:pk>/', take_quiz, name='take_quiz'),
     path('taken/', TakenQuizListView.as_view(), name='taken_quiz'),
-
+    path('<int:pk>/studentresults/', QuizResultsView.as_view(),
+         name='student_quiz_results'),
 
 ]
