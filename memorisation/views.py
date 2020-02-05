@@ -1,20 +1,10 @@
-from functools import wraps
-
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseRedirect, HttpResponseNotAllowed
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, reverse
 
 from .forms import RatingsForm
 from .models import Practice
-
-
-def post_required(view):
-    @wraps(view)
-    def view_wrapper(request, *args, **kwargs):
-        if request.method != 'POST':
-            return HttpResponseNotAllowed(['POST'])
-        return view(request, *args, **kwargs)
-    return view_wrapper
+from account.decorators import post_required
 
 
 @login_required
