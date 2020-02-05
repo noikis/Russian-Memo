@@ -165,6 +165,7 @@ MATERIAL_ADMIN_SITE = {
         'account': 'people',
         'words': 'language',
         'quiz': 'list_alt',
+        'memorisation': 'games',
     },
     'MODEL_ICONS': {
         # Set icons for models(lowercase), including 3rd party models, {'model_name': 'material_icon_name',
@@ -176,6 +177,7 @@ MATERIAL_ADMIN_SITE = {
         'answer': 'format_list_numbered',
         'quiz': 'list_alt',
         'takenquiz': 'done_all',
+        'practice': 'update',
 
     }
 }
