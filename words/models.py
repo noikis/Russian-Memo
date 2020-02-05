@@ -5,8 +5,6 @@ from account.models import Student
 class Deck(models.Model):
     category = models.CharField(max_length=100, default="New Deck")
     color = models.CharField(default="#00bcd4", max_length=30)
-    student = models.ForeignKey(
-        Student, on_delete=models.CASCADE, related_name="students")
 
     def __str__(self):
         return self.category

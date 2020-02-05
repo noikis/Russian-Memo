@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags  %}
+{% load crispy_forms_tags humanize %}
 
 {% block content %}
 
@@ -25,7 +25,7 @@
             {% for taken_quiz in taken_quizzes %}
             <tr>
                 <td>{{ taken_quiz.student.user.username }}</td>
-                <td>{{ taken_quiz.date }}</td>
+                <td>{{ taken_quiz.date|naturaltime }}</td>
                 <td>{{ taken_quiz.percentage }}</td>
             </tr>
             {% endfor %}
