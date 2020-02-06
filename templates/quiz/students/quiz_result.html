@@ -4,40 +4,29 @@
 
 {% block content %}
 
-<h2>{{quiz.name}}</h2>
+<h3>{{quiz.name}}</h3>
+
+<a href="{% url 'quiz:taken_quiz' %}" class="btn">Back</a>
+
 
 <div class="progress">
     <div class="determinate" role="progressbar" style="width: {{percentage}}%" aria-valuenow="{{percentage}}"
         aria-valuemin="0" aria-valuemax="100">{{percentage}}%</div>
 </div>
-<hr>
 {% for question in questions %}
-<div class="card">
-    <div class="card-body">
-        <h5 class="card-title">{{forloop.counter}}. {{question.text}}</h5>
-        <table class="striped">
-            <thead>
-                <tr>
-                    <th class="center-align">Yours</th>
-                    <th class="center-align">Correct</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for opt in question.answers.all %}
-                {% marked_answer user opt as opt_marked %}
-                <tr>
-                    <td
-                        style="width: 100px;{% if opt_marked == 'correct' %} background:green{% elif opt_marked == 'wrong' %} background:red{% endif %}">
-                    </td>
-                    <td style="width: 100px;{% if opt.is_correct %} background:green{% endif %}"></td>
-                    <td>{{opt.text}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
+<ul class="collection with-header z-depth-2">
+    <li class="collection-header">
+        <h5>{{forloop.counter}}. {{question.text}}</h5>
+    </li>
+
+    {% for answer in question.answers.all %}
+    {% marked_answer user answer as answer_marked %}
+    <li {% if  answer_marked == "correct" or answer.is_correct %} class="collection-item green"
+        {% elif answer_marked == "wrong" %} class="collection-item red" {% else %} class="collection-item" {% endif %}>
+        {{ answer.text }}
+    </li>
+    {% endfor %}
+</ul>
 <br>
 {% endfor %}
 {% endblock %}

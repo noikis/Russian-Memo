@@ -111,7 +111,7 @@ def take_quiz(request, pk):
     else:
         form = TakeQuizForm(question=question)
 
-    return render(request, 'quiz/students /take_quiz_form.html', {
+    return render(request, 'quiz/students/take_quiz_form.html', {
         'quiz': quiz,
         'question': question,
         'form': form,

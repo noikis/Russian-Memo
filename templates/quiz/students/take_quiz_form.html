@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags %}
 
 {% block content %}
 <div class="progress mb-3">
@@ -13,7 +12,26 @@
 <p class="lead">{{ question.text }}</p>
 <form method="post" novalidate>
     {% csrf_token %}
-    {{ form }}
-    <button type="submit" class="btn btn-primary">Next →</button>
+    {% for field in form %}
+    {{ field }}
+    {% endfor %}
+    <button type="submit" class="btn ">Next →</button>
 </form>
+<script>
+    const answersCount = document.querySelector("#id_answer").childElementCount;
+
+    for (let i = 0; i < answersCount; i++) {
+        const input = document.querySelector(`#id_answer_${i}`);
+        const label = input.parentElement;
+        let span = document.createElement("span");
+
+        span.textContent = label.textContent;
+        label.innerHTML = "";
+        input.className = "with-gap";
+
+        label.appendChild(input)
+        label.appendChild(span)
+    }
+
+</script>
 {% endblock %}

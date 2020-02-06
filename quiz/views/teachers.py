@@ -26,7 +26,7 @@ class QuizCreateView(CreateView):
         quiz.save()
         messages.success(
             self.request, 'The quiz was created with success! Go ahead and add some questions now.')
-        return redirect('account:dashboard')
+        return redirect('quiz:question_add', quiz.pk)
 
 
 @method_decorator([login_required, teacher_required], name='dispatch')
@@ -147,7 +147,7 @@ def question_add(request, pk):
             question.save()
             messages.success(
                 request, 'You may now add answers/options to the question.')
-            return redirect('quiz:quiz_list', )
+            return redirect('quiz:question_update', quiz.pk, question.pk)
             # quiz.pk, question.pk
     else:
         form = QuestionForm()

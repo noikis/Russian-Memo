@@ -1,30 +1,28 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="card">
-    <table class="centered">
-        <thead>
-            <tr>
-                <th>Quiz</th>
-                <th class="d-none d-sm-table-cell">Length</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for quiz in quizzes %}
-            <tr>
-                <td class="align-middle">{{ quiz.name }}</td>
-                <td class="align-middle d-none d-sm-table-cell">{{ quiz.questions_count }} questions</td>
-                <td class="text-right">
-                    <a href="#" class="btn btn-primary">Start quiz</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td class="bg-light text-center font-italic" colspan="4">No More Quizzes.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
+<table class="centered z-depth-2">
+    <thead>
+        <tr>
+            <th>Quiz</th>
+            <th>Length</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for quiz in quizzes %}
+        <tr>
+            <td>{{ quiz.name }}</td>
+            <td>{{ quiz.questions_count }} questions</td>
+            <td>
+                <a href="{% url 'quiz:take_quiz' quiz.pk %}" class="btn">Start quiz</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td class="bg-light text-center font-italic" colspan="4">No More Quizzes.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
 {% endblock %}
