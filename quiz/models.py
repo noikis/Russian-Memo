@@ -46,6 +46,9 @@ class TakenQuiz(models.Model):
     class Meta:
         verbose_name_plural = "Taken Quizzes"
 
+    def __str__(self):
+        return "id_{}".format(self.pk)
+
 
 class StudentAnswer(models.Model):
     student = models.ForeignKey(

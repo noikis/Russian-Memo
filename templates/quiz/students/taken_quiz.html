@@ -14,7 +14,7 @@
         <tr>
             <td>{{ taken_quiz.quiz.name }}</td>
             <td>{{ taken_quiz.percentage }}</td>
-            <td><a href="{% url 'quiz:student_quiz_results' taken_quiz.pk %}" class="btn">View Results</a></td>
+            <td><a href="{% url 'quiz:student_quiz_results' taken_quiz.quiz.pk %}" class="btn">View Results</a></td>
         </tr>
         {% empty %}
         <tr>

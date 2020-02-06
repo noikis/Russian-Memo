@@ -38,7 +38,7 @@ class TakenQuizListView(ListView):
 
     def get_queryset(self):
         queryset = self.request.user.student.taken_quizzes \
-            .order_by('quiz__name')
+            .order_by('date')
         return queryset
 
 
@@ -50,6 +50,7 @@ class QuizResultsView(View):
         quiz = Quiz.objects.get(id=kwargs['pk'])
         taken_quiz = TakenQuiz.objects.filter(
             student=request.user.student, quiz=quiz)
+
         if not taken_quiz:
             """
             Don't show the result if the user didn't attempted the quiz
