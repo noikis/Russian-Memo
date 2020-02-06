@@ -12,7 +12,7 @@ from .algorithm import interval
 class Practice(models.Model):
     card = models.ForeignKey(
         Card, on_delete=models.CASCADE, related_name="cards")
-    user = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
     next_practice = models.DateField(auto_now_add=True)
     times_practiced = models.PositiveIntegerField(default=1)
     easy_factor = models.FloatField(default=2.5)

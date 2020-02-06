@@ -1,40 +1,30 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags crispy_forms_filters %}
+{% load quiz_extras %}
 
 {% block content %}
-<style>
-    [type="checkbox"]:not(:checked),
-    [type="checkbox"] {
-        position: relative;
-        opacity: 1;
-    }
-
-    [type="checkbox"]:not(:checked),
-    [type="checkbox"]:checked {
-        cursor: pointer;
-        opacity: 1;
-    }
-
-    .answer {
-        padding-bottom: 10px;
-        border-bottom: solid 2px #333;
-    }
-</style>
-
 <form method="POST" action="{% url 'quiz:question_update' quiz.pk question.pk %}">
     {% csrf_token %}
 
     {{ formset.management_form }}
     {{ form }}
     <div class="card">
-        <div class="card-content">
+        <ul class="collection">
             {% for form in formset %}
-            <p class="answer">
-                {{ form }}
-            </p>
+            <li class="collection-item">
+                {% for field in form %}
+                {{ field.errors }}
+                <label>
+                    {{ field }}
+                    {% if  field.is_hidden or field|field_type == "TextInput"%}
+                    {% else %}
+                    <span>{{ field.label }}</span>
+                    {% endif %}
+                </label>
+                {% endfor %}
+            </li>
             {% endfor %}
-        </div>
+        </ul>
     </div>
     <input type="submit" value="submit" class="btn">
     {% endblock %}
