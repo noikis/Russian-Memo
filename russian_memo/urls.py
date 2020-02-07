@@ -13,6 +13,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls', namespace='account',)),
     path('quiz/', include('quiz.urls', namespace='quiz',)),
+    path('words/', include('words.urls', namespace='words',)),
+
     path('', index,  name='home'),
     path('api/cards/', cards, name='cards'),
     path('fetch/', fetch_cards, name='fetch_cards'),

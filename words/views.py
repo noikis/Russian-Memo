@@ -1,10 +1,25 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.core.serializers import serialize
 from django.http import HttpResponse
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.generic import CreateView, ListView, UpdateView
 
-from .models import Card
+
+from .models import Card, Deck
 from account.decorators import teacher_required, student_required
+
+
+class DeckCreateView(CreateView):
+    model = Deck
+    fields = ('category', 'color',)
+    template_name = 'words/deck_add.html'
+
+    def form_valid(self, form):
+        deck = form.save(commit=False)
+        deck.save()
+        messages.success(self.request, "Deck created!")
+        return redirect('dashboard')
 
 
 @login_required
