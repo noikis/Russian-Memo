@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<style>
+    select {
+        display: block;
+    }
+</style>
+
+<h2 class="mb-3">Add a new Card</h2>
+<div class="row">
+    <div class="col md6 s8 l12">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit" class="btn ">Save</button>
+            <a href='#' class="btn" role="button">Nevermind</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
