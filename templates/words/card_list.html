@@ -7,7 +7,15 @@
             <h3 class="white-text center">{{ card.word}}</h3>
         </div>
     </div>
+    {% empty %}
+    <p class="flow-text center"> You have no Cards in this Deck</p>
     {% endfor %}
+
+    <div class="fixed-action-btn">
+        <a href="{% url 'words:card_add' %}" class="btn-floating btn-large waves-effect waves-light indigo">
+            <i class="material-icons">add</i>
+        </a>
+    </div>
 </div>
 
 {% endblock %}

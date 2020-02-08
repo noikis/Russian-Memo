@@ -4,13 +4,19 @@
     {% for deck in object_list %}
     <div class="col s12 m4">
         <div class="card-panel" style="background-color: {{deck.color}};">
-            <a href="#">
+            <a href="{% url 'words:card_list' deck.id %}">
                 <h3 class="white-text center">{{ deck.category}}</h3>
             </a>
         </div>
-
     </div>
+    {% empty %}
+    <p class="flow-text center"> You have no Deck</p>
     {% endfor %}
+</div>
+<div class="fixed-action-btn">
+    <a href="{% url 'words:deck_add' %}" class="btn-floating btn-large waves-effect waves-light indigo">
+        <i class="material-icons">add</i>
+    </a>
 </div>
 
 {% endblock %}

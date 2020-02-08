@@ -19,11 +19,11 @@
                 <li>
                     <a href="{% url 'quiz:taken_quiz' %}"> Taken Quizzes</a>
                 </li>
+                <li>
+                    <a href="{% url 'words:deck_list' %}"> Decks</a>
+                </li>
                 {% endif %}
 
-                <li>
-                    <a href="{% url 'account:dashboard' %}"> Dashboard</a>
-                </li>
                 <li>
                     <a href="{% url 'account:logout' %}" class="waves-effect waves-light btn">Log out
                         <i class="material-icons right">exit_to_app</i>

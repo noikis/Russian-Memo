@@ -23,7 +23,7 @@ class DeckCreateView(CreateView):
         deck.student = self.request.user.student
         deck.save()
         messages.success(self.request, "Deck created!")
-        return redirect('account:dashboard')
+        return redirect('words:deck_list')
 
 
 @method_decorator([login_required, student_required], name='dispatch')
