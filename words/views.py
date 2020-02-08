@@ -77,6 +77,20 @@ class DeckUpdateView(UpdateView):
         return reverse('words:deck_update', kwargs={'pk': self.object.pk})
 
 
+class CardUpdateView(UpdateView):
+    model = Card
+    fields = ('word', 'explanation', 'translation', 'synonymes')
+    context_object_name = 'card'
+    template_name = 'words/card_update.html'
+
+    def get_queryset(self):
+        queryset = Card.objects.filter(pk=self.kwargs['pk'])
+        return queryset
+
+    def get_success_url(self):
+        return reverse('words:card_update', kwargs={'pk': self.object.pk})
+
+
 @login_required
 def cards(request):
     queryset = Card.objects.filter(deck__student__user=request.user)

@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2 class="mb-3">
+    {{ card.word }}
+
+</h2>
+<div class="row mb-3">
+    <div class="col-md-6 col-sm-8 col-12">
+        <form method="post" novalidate>
+            {% csrf_token %}
+            {{ form }}
+            <button type="submit" class="btn ">Save changes</button>
+            <a href="#" class="btn btn-outline-secondary" role="button">Nevermind</a>
+            <a href="#" class="btn red float-right">Delete</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

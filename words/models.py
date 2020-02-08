@@ -13,7 +13,8 @@ class Deck(models.Model):
 
 
 class Card(models.Model):
-    deck = models.ForeignKey(Deck, on_delete=models.CASCADE)
+    deck = models.ForeignKey(
+        Deck, on_delete=models.CASCADE, related_name='cards')
     word = models.CharField(max_length=100, blank=False, null=False)
     image = models.ImageField(upload_to='cards/', blank=True)
     explanation = models.TextField(max_length=500, blank=True)
