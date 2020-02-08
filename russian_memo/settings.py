@@ -31,10 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'memorisation',
-    'quiz',
-    'words',
-    'account',
+
     'crispy_forms',
     'crispy_forms_materialize',
     'material.admin',
@@ -46,6 +43,10 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.staticfiles',
     'debug_toolbar',
+    'memorisation',
+    'quiz',
+    'words',
+    'account',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -182,3 +184,12 @@ MATERIAL_ADMIN_SITE = {
 
     }
 }
+
+# Debug Toolbar Settings
+
+
+INTERNAL_IPS = [
+    # ...
+    '127.0.0.1',
+    # ...
+]

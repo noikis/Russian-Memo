@@ -31,6 +31,7 @@ class DeckListView(ListView):
 
     def get_queryset(self):
         queryset = Deck.objects.all()
+
         return queryset
 
 
