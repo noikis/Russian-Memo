@@ -4,8 +4,11 @@
     {% for deck in object_list %}
     <div class="col s12 m4">
         <div class="card-panel" style="background-color: {{deck.color}};">
-            <h3 class="white-text center">{{ deck.category}}</h3>
+            <a href="#">
+                <h3 class="white-text center">{{ deck.category}}</h3>
+            </a>
         </div>
+
     </div>
     {% endfor %}
 </div>

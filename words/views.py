@@ -12,7 +12,7 @@ from memorisation.models import Practice
 from account.decorators import teacher_required, student_required
 
 
-@method_decorator([login_required], name='dispatch')
+@method_decorator([login_required, student_required], name='dispatch')
 class DeckCreateView(CreateView):
     model = Deck
     fields = ('category', 'color',)
@@ -20,27 +20,31 @@ class DeckCreateView(CreateView):
 
     def form_valid(self, form):
         deck = form.save(commit=False)
+        deck.student = self.request.user.student
         deck.save()
         messages.success(self.request, "Deck created!")
         return redirect('account:dashboard')
 
 
+@method_decorator([login_required, student_required], name='dispatch')
 class DeckListView(ListView):
     model = Deck
     template_name = 'words/deck_list.html'
 
     def get_queryset(self):
-        queryset = Deck.objects.all()
-
+        queryset = Deck.objects.filter(student=self.request.user.student)
         return queryset
 
 
+@method_decorator([login_required, student_required], name='dispatch')
 class CardListView(ListView):
     model = Card
     template_name = 'words/card_list.html'
+    context_object_name = 'cards'
 
     def get_queryset(self):
-        queryset = Card.objects.all()
+        deck_id = self.kwargs['pk']
+        queryset = Card.objects.filter(deck_id=deck_id)
         return queryset
 
 
