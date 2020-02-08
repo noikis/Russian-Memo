@@ -25,6 +25,24 @@ class DeckCreateView(CreateView):
         return redirect('account:dashboard')
 
 
+class DeckListView(ListView):
+    model = Deck
+    template_name = 'words/deck_list.html'
+
+    def get_queryset(self):
+        queryset = Deck.objects.all()
+        return queryset
+
+
+class CardListView(ListView):
+    model = Card
+    template_name = 'words/card_list.html'
+
+    def get_queryset(self):
+        queryset = Card.objects.all()
+        return queryset
+
+
 @method_decorator([login_required], name='dispatch')
 class CardCreateView(CreateView):
     model = Card

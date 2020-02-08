@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    {% for card in object_list %}
+    <div class="col s12 m4">
+        <div class="card-panel" style="background-color: {{card.deck.color}};">
+            <h3 class="white-text center">{{ card.word}}</h3>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
