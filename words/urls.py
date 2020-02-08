@@ -1,6 +1,7 @@
 from django.urls import path
 
-from .views import DeckCreateView, CardCreateView, DeckListView, CardListView
+from .views import (DeckCreateView, CardCreateView,
+                    DeckListView, CardListView, DeckUpdateView)
 
 app_name = 'words'
 
@@ -9,4 +10,5 @@ urlpatterns = [
     path('decks/', DeckListView.as_view(), name='deck_list'),
     path('<int:pk>/cards/', CardListView.as_view(), name='card_list'),
     path('cards/add/', CardCreateView.as_view(), name='card_add'),
+    path('decks/<int:pk>/', DeckUpdateView.as_view(), name='deck_update'),
 ]

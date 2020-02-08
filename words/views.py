@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.core.serializers import serialize
 from django.http import HttpResponse
 from django.contrib import messages
@@ -62,6 +62,19 @@ class CardCreateView(CreateView):
 
         messages.success(self.request, "Card created!")
         return redirect('account:dashboard')
+
+
+class DeckUpdateView(UpdateView):
+    model = Deck
+    fields = ('category', 'color', )
+    context_object_name = 'deck'
+    template_name = 'words/deck_update.html'
+
+    def get_queryset(self):
+        return self.request.user.student.decks.all()
+
+    def get_success_url(self):
+        return reverse('words:deck_update', kwargs={'pk': self.object.pk})
 
 
 @login_required
