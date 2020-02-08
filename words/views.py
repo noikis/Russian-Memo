@@ -8,6 +8,7 @@ from django.views.generic import CreateView, ListView, UpdateView
 
 
 from .models import Card, Deck
+from memorisation.models import Practice
 from account.decorators import teacher_required, student_required
 
 
@@ -33,6 +34,9 @@ class CardCreateView(CreateView):
     def form_valid(self, form):
         card = form.save(commit=False)
         card.save()
+        practice = Practice(card=card, student=self.request.user.student)
+        practice.save()
+
         messages.success(self.request, "Card created!")
         return redirect('account:dashboard')
 
