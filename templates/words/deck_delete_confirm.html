@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2 class="mb-3">Confirm deletion</h2>
+<p class="flow-tex">
+    Are you sure you want to delete the Deck <strong>"{{ deck.category }}"</strong>? There is no
+    going back.
+</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn red ">Yes, I'm sure</button>
+    <a href="{% url 'words:deck_update' deck.id %}" class="btn " role="button">Nevermind</a>
+</form>
+{% endblock %}

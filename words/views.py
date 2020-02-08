@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 
 
 from .models import Card, Deck
@@ -64,6 +64,7 @@ class CardCreateView(CreateView):
         return redirect('account:dashboard')
 
 
+@method_decorator([login_required, student_required], name='dispatch')
 class DeckUpdateView(UpdateView):
     model = Deck
     fields = ('category', 'color', )
@@ -77,9 +78,10 @@ class DeckUpdateView(UpdateView):
         return reverse('words:deck_update', kwargs={'pk': self.object.pk})
 
 
+@method_decorator([login_required, student_required], name='dispatch')
 class CardUpdateView(UpdateView):
     model = Card
-    fields = ('word', 'explanation', 'translation', 'synonymes')
+    fields = ('word', 'explanation', 'translation',  'synonymes')
     context_object_name = 'card'
     template_name = 'words/card_update.html'
 
@@ -89,6 +91,48 @@ class CardUpdateView(UpdateView):
 
     def get_success_url(self):
         return reverse('words:card_update', kwargs={'pk': self.object.pk})
+
+
+@method_decorator([login_required, student_required], name='dispatch')
+class CardDeleteView(DeleteView):
+    model = Card
+    context_object_name = 'card'
+    template_name = 'words/card_delete_confirm.html'
+    pk_url_kwarg = 'pk'
+
+    def delete(self, request, *args, **kwargs):
+        card = self.get_object()
+        messages.success(
+            request, 'The card %s was deleted with success!' % card.word)
+        return super().delete(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Card.objects.filter(pk=self.kwargs['pk'])
+        return queryset
+
+    def get_success_url(self):
+        return reverse('words:deck_list')
+
+
+@method_decorator([login_required, student_required], name='dispatch')
+class DeckDeleteView(DeleteView):
+    model = Deck
+    context_object_name = 'deck'
+    template_name = 'words/deck_delete_confirm.html'
+    pk_url_kwarg = 'pk'
+
+    def delete(self, request, *args, **kwargs):
+        deck = self.get_object()
+        messages.success(
+            request, 'The deck %s was deleted with success!' % deck.category)
+        return super().delete(request, *args, **kwargs)
+
+    def get_queryset(self):
+        queryset = Deck.objects.filter(pk=self.kwargs['pk'])
+        return queryset
+
+    def get_success_url(self):
+        return reverse('words:deck_list')
 
 
 @login_required
