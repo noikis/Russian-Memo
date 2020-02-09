@@ -36,3 +36,7 @@ def skip_practice(request, practice_id, redirect):
     practice.delay()
     practice.save()
     return HttpResponseRedirect(reverse(redirect))
+
+
+def hangman(request):
+    return render(request, 'games/hangman.html')

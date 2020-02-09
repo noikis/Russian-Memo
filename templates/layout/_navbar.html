@@ -1,3 +1,9 @@
+<ul id="dropdown1" class="dropdown-content">
+    <li><a href="{% url 'memo:hangman' %}">Hangman</a></li>
+    <li><a href="#!">Flash Cards</a></li>
+    <li class="divider"></li>
+    <li><a href="#!">Speed Writing</a></li>
+</ul>
 <nav>
     <div class="nav-wrapper indigo darken-2">
         <div class="container">
@@ -22,6 +28,9 @@
                 <li>
                     <a href="{% url 'words:deck_list' %}"> Decks</a>
                 </li>
+                <li><a class="dropdown-trigger" href="#!" data-target="dropdown1">Games<i
+                            class="material-icons right">arrow_drop_down</i></a></li>
+
                 {% endif %}
 
                 <li>

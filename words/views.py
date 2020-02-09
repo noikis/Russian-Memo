@@ -135,9 +135,8 @@ class DeckDeleteView(DeleteView):
         return reverse('words:deck_list')
 
 
-@login_required
 def cards(request):
-    queryset = Card.objects.filter(deck__student__user=request.user)
+    queryset = Card.objects.all()
     queryset = serialize('json', queryset)
     return HttpResponse(queryset, content_type="application/json")
 

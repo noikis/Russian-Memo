@@ -9,11 +9,12 @@
             .then((res) => res.json())
             .then((data) => {
                 let output = "<h2>Cards</h2>"
+                console.log(data)
                 data.forEach(card => {
                     output += `
                    <ul class="collection">
                        <li class="collection-item">id: ${card.pk}<li>
-                        <li class="collection-item>word: ${card.fields.word}<li>
+                        <li class="collection-item">word: ${card.fields.word} <li>
                    </ul>
                    `
 
