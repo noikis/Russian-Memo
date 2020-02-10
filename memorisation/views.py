@@ -40,3 +40,7 @@ def skip_practice(request, practice_id, redirect):
 
 def hangman(request):
     return render(request, 'games/hangman.html')
+
+
+def speed_typing(request):
+    return render(request, 'games/speed_typing.html')
