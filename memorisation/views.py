@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404, render, reverse
+from django.shortcuts import get_object_or_404, render, reverse, redirect
 
 from .forms import RatingsForm
 from .models import Practice
@@ -8,25 +8,25 @@ from account.decorators import post_required
 
 
 @login_required
-def next_practice_item(request, template):
+def next_practice_item(request):
     practice = Practice.objects.filter(
-        user=request.user).order_by('next_practice')[0]
+        student=request.user.student).order_by('next_practice')[0]
     form = RatingsForm(initial={"id": practice.id})
-    item = practice.item
-    return render(request, template, {
-        'practice': practice, 'item': item, 'form': form})
+    card = practice.card
+    return render(request, 'games/flashcards.html', {
+        'practice': practice, 'card': card, 'form': form})
 
 
 @post_required
 @login_required
-def process_rating(request, post_save_redirect):
+def process_rating(request):
     form = RatingsForm(request.POST)
     if form.is_valid():
         practice_item = get_object_or_404(Practice,
                                           pk=int(form.cleaned_data['id']))
         practice_item.set_next_practice(int(form.cleaned_data['rating']))
         practice_item.save()
-        return HttpResponseRedirect(post_save_redirect)
+        return redirect('account:dashboard')
 
 
 @post_required

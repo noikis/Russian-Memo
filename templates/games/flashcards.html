@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>practice for the card {{ card.word }}</h1>
+<p>{{ practice.next_practice }}</p>
+
+<form action="{% url 'memo:process_rating' %}" method="post">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="submit" class="btn">
+</form>
+
+<script>
+    const selects = document.querySelectorAll('select');
+
+    for (const select of selects) {
+        select.classList.add('browser-default');
+    }
+</script>
+
+{% endblock content %}
