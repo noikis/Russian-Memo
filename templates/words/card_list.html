@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row">
-    {% for card in object_list %}
+    {% for card in cards %}
     <div class="col s12 m4">
         <div class="card-panel" style="background-color: {{card.deck.color}};">
             <a href="{% url 'words:card_update' card.id %}">
@@ -14,7 +14,7 @@
     {% endfor %}
 
     <div class="fixed-action-btn">
-        <a href="{% url 'words:card_add' %}" class="btn-floating btn-large waves-effect waves-light indigo">
+        <a href="{% url 'words:card_add' pk %}" class="btn-floating btn-large waves-effect waves-light indigo">
             <i class="material-icons">add</i>
         </a>
     </div>

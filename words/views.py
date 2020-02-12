@@ -40,22 +40,26 @@ class DeckListView(ListView):
 class CardListView(ListView):
     model = Card
     template_name = 'words/card_list.html'
-    context_object_name = 'cards'
 
-    def get_queryset(self):
+    def get_context_data(self):
         deck_id = self.kwargs['pk']
-        queryset = Card.objects.filter(deck_id=deck_id)
-        return queryset
+        context = {
+            'pk': deck_id,
+            'cards': Card.objects.filter(deck_id=deck_id)
+        }
+        return context
 
 
 @method_decorator([login_required], name='dispatch')
 class CardCreateView(CreateView):
     model = Card
-    fields = '__all__'
+    fields = ('word', 'explanation', 'translation', 'synonymes', )
     template_name = 'words/card_add.html'
 
     def form_valid(self, form):
         card = form.save(commit=False)
+
+        card.deck = Deck.objects.get(pk=self.kwargs['pk'])
         card.save()
         practice = Practice(card=card, student=self.request.user.student)
         practice.save()
