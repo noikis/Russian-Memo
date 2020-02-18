@@ -50,11 +50,11 @@ def login(request):
         # if user is in the Database
         if user is not None:
             auth.login(request, user)
-            messages.success(request, 'Вы зарегистрированны!')
+            messages.success(request, 'You are registrated!')
             return redirect('account:dashboard')
         # user not Found
         else:
-            messages.error(request, "'Введенные данны не совпадают")
+            messages.error(request, "Bad credentials.")
             return redirect('account:login')
 
     # accessing the login page

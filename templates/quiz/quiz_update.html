@@ -1,5 +1,6 @@
 {% extends 'base.html' %}}
 {% block content %}
+
 <h2 class="mb-3">
     {{ quiz.name }}
     <a href="{% url 'quiz:question_results_teacher' quiz.pk %}" class="btn btn-primary float-right">View results</a>

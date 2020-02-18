@@ -13,34 +13,29 @@
         }
     }
 </style>
+
+{% include 'layout/_toast.html' %}
+
 <div class="row " style="overflow-x: hidden ; margin-bottom: 0">
     <div class="col m8 s12 hide-on-med-and-down ">
         <img src="{% static 'images/confirm.svg' %}" alt="svg image 'confirm' from Undraw">
 
     </div>
-    {% if messages %}
-    {% for message in messages %}
-    {{ message}}
-    <!-- 
-    <script>
-        M.toast({ html: '{{ message }}', classes: 'rounded red' })
-    </script>
-     -->
 
-    {% endfor %}
-    {% endif %}
     <div class="col l4 m12 s12 center  ">
         <h3 class="white-text">Sign in</h3>
-        <form class=" my-2 card-panel ">
+        <form class=" my-2 card-panel " method="POST">
+            {% csrf_token %}
+
             <div class="input-field">
                 <i class="material-icons prefix">account_circle</i>
-                <input id="icon_prefix" type="text" class="">
-                <label for="icon_prefix">Login</label>
+                <input name="username" type="text">
+                <label for="username">Login</label>
             </div>
             <div class="input-field">
                 <i class="material-icons prefix">lock</i>
-                <input id="icon_telephone" type="password" class="">
-                <label for="icon_telephone">Password</label>
+                <input name="password" type="password">
+                <label for="password">Password</label>
             </div>
 
             <button class="btn waves-effect waves-light" type="submit" name="action">Submit

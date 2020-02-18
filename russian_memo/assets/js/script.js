@@ -1,3 +1,18 @@
+// Custom Elements
+class Toast extends HTMLElement {
+    constructor() {
+        super();
+        this.message = this.getAttribute('message');
+        this.color = this.getAttribute('color');
+        this.init = M.toast({
+            html: this.message,
+            classes: `rounded ${this.color}`
+        });
+    }
+}
+customElements.define('material-toast', Toast);
+
+
 // SideNav init 
 const sideNav = document.querySelector(".sidenav");
 M.Sidenav.init(sideNav, {

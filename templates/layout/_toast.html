@@ -1,0 +1,21 @@
+{% if messages %}
+{% for message in messages %}
+<!-- INFO -->
+{% if message.level == DEFAULT_MESSAGE_LEVELS.INFO %}
+<material-toast message="{{ message }}" color="cyan"></material-toast>
+{% endif %}
+<!-- SUCCESS -->
+{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+<material-toast message="{{ message }}" color="green"></material-toast>
+{% endif %}
+<!-- WARNING -->
+{% if message.level == DEFAULT_MESSAGE_LEVELS.WARNING %}
+<material-toast message="{{ message }}" color="yellow"></material-toast>
+{% endif %}
+<!-- ERROR -->
+{% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+<material-toast message="{{ message }}" color="red"></material-toast>
+{% endif %}
+
+{% endfor %}
+{% endif %}

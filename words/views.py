@@ -65,7 +65,7 @@ class CardCreateView(CreateView):
         practice.save()
 
         messages.success(self.request, "Card created!")
-        return redirect('account:dashboard')
+        return redirect('words:card_list')
 
 
 @method_decorator([login_required, student_required], name='dispatch')
@@ -79,6 +79,7 @@ class DeckUpdateView(UpdateView):
         return self.request.user.student.decks.all()
 
     def get_success_url(self):
+        messages.success(self.request, "Deck updated!")
         return reverse('words:deck_update', kwargs={'pk': self.object.pk})
 
 
@@ -94,6 +95,7 @@ class CardUpdateView(UpdateView):
         return queryset
 
     def get_success_url(self):
+        messages.success(self.request, "Card updated!")
         return reverse('words:card_update', kwargs={'pk': self.object.pk})
 
 
@@ -115,6 +117,7 @@ class CardDeleteView(DeleteView):
         return queryset
 
     def get_success_url(self):
+        messages.error(self.request, "Card deleted.")
         return reverse('words:deck_list')
 
 
@@ -136,6 +139,7 @@ class DeckDeleteView(DeleteView):
         return queryset
 
     def get_success_url(self):
+        messages.error(self.request, "Deck deleted.")
         return reverse('words:deck_list')
 
 

@@ -4,6 +4,7 @@
 
 
 {% block content %}
+
 <style>
     body {
         background-color: #3F3D56;
@@ -15,6 +16,12 @@
         }
     }
 </style>
+
+{% if messages %}
+{% for message in messages %}
+<material-toast message="{{ message }}"></material-toast>
+{% endfor %}
+{% endif %}
 
 <div class="row " style="overflow-x: hidden ; margin-bottom: 0">
 

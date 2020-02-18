@@ -3,6 +3,7 @@
 {% load quiz_extras %}
 
 {% block content %}
+
 <form method="POST" action="{% url 'quiz:question_update' quiz.pk question.pk %}">
     {% csrf_token %}
 
