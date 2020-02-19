@@ -1,7 +1,12 @@
 <footer class="page-footer black" style="padding-top: 0; margin-top:3rem">
     <div class="footer-copyright">
         <div class="container center">
-            © <span id="copyright-year">2014</span> Copyright
+            &copy; <span id="copyright-year">2020</span> Copyright
         </div>
     </div>
 </footer>
+
+<script>
+    const year = new Date();
+    document.querySelector("#copyright-year").textContent = year.getFullYear()
+</script>

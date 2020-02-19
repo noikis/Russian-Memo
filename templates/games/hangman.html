@@ -52,10 +52,10 @@
             <div class="popup card">
                 <div class="card-content">
                     <h3 id="final-message">You have Won &#128515;</h3>
-                    <button class="btn" id="play-btn">
+                    <a href="{% url 'memo:hangman' %}" class="btn" id="play-btn">
                         <i class="material-icons">replay</i>
                         Play Again
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -67,5 +67,6 @@
 
 </body>
 <script src="{% static 'js/hangman.js' %}"></script>
+<script src="{% static 'js/materialize.min.js' %}"></script>
 
 </html>

@@ -28,6 +28,7 @@ let score = 0;
 let gameOver;
 let randIndex = 0;
 let voices = [];
+let inputFocus = false;
 
 
 // Events
@@ -47,6 +48,8 @@ function init() {
 
         // Start matching on word input
         wordInput.addEventListener("input", () => {
+            inputFocus = true;
+
             if (matchWords(words)) {
                 gameOver = false;
                 time = currentLevel + 1;
@@ -84,7 +87,7 @@ function showWord(words) {
 
 // Countdown timer
 function countdown() {
-    if (time > 0) {
+    if (time > 0 && inputFocus) {
         time--;
     } else if (time === 0) {
         gameOver = true;

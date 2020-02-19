@@ -97,3 +97,18 @@
     {% endif %}
 
 </ul>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const sideNav = document.querySelector(".sidenav");
+        M.Sidenav.init(sideNav, {
+            menuWidth: 100
+        });
+
+        const dropDown = document.querySelectorAll('.dropdown-trigger');
+        M.Dropdown.init(dropDown);
+
+
+
+    });
+</script>

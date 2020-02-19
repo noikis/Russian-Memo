@@ -33,7 +33,7 @@
                 <i class="material-icons medium right" id="speaker">volume_up</i>
             </div>
         </div>
-        <input type="text" class="white-text" placeholder="Start typing..." id="word-input" autofocus>
+        <input type="text" class="white-text" placeholder="Start typing..." id="word-input">
         <h4 class="mt-3 yellow-text" id="message"></h4>
 
 
@@ -69,14 +69,16 @@
         <div class="popup card indigo">
             <div class="card-content">
                 <h3 id="final-message">Unfortunatly you lost &#128531;</h3>
-                <button class="btn" id="play-btn">
+                <a href="{% url 'memo:speed_typing' %}" class="btn" id="play-btn">
                     <i class="material-icons">replay</i>
                     Play Again
-                </button>
+                </a>
             </div>
         </div>
     </div>
     <script src="{% static 'js/speed_typing.js' %}"></script>
+    <script src="{% static 'js/materialize.min.js' %}"></script>
+
 </body>
 
 </html>
