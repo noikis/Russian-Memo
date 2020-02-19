@@ -12,18 +12,34 @@ from memorisation.models import Practice
 from account.decorators import teacher_required, student_required
 
 
-@method_decorator([login_required, student_required], name='dispatch')
-class DeckCreateView(CreateView):
-    model = Deck
-    fields = ('category', 'color',)
-    template_name = 'words/deck_add.html'
+# @method_decorator([login_required, student_required], name='dispatch')
+# class DeckCreateView(CreateView):
+#     model = Deck
+#     fields = ('category', 'color',)
+#     template_name = 'words/deck_add.html'
 
-    def form_valid(self, form):
-        deck = form.save(commit=False)
-        deck.student = self.request.user.student
+
+#     def form_valid(self, form):
+#         deck = form.save(commit=False)
+#         deck.student = self.request.user.student
+#         deck.save()
+#         messages.success(self.request, "Deck created!")
+#         return redirect('words:deck_list')
+
+@login_required
+@student_required
+def deck_create(request):
+    if request.method == "POST":
+        category = request.POST['category']
+        color = request.POST['color']
+        student = request.user.student
+
+        deck = Deck(student=student, category=category, color=color)
         deck.save()
-        messages.success(self.request, "Deck created!")
+        messages.success(request, "Deck created!")
         return redirect('words:deck_list')
+
+    return render(request, 'words/deck_add.html')
 
 
 @method_decorator([login_required, student_required], name='dispatch')

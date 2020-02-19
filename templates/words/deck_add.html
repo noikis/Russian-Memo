@@ -1,18 +1,27 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags %}
-
 {% block content %}
 
+<a href="{% url 'words:deck_list' %}" type="submit" class="btn blue-grey">
+    <i class="material-icons left">arrow_back</i>
+    Back
+</a href="">
 <h2 class="mb-3">Add a new Deck</h2>
-<div class="row">
-    <div class="col md6 s8 l12">
-        <form method="post" novalidate>
-            {% csrf_token %}
-            {{ form }}
-            <button type="submit" class="btn ">Save</button>
-            <a href='#' class="btn" role="button">Nevermind</a>
-        </form>
+<form method="POST" class=" card-panel">
+    {% csrf_token %}
+    <div class=" input-field">
+        <input id="category" name='category' type="text" value="New Deck" class="">
+        <label for="category">Category</label>
     </div>
-</div>
+    <div class="" style="margin-bottom: 2rem;">
+        <label for="color">Color</label>
+        <input type="color" name="color" id="color">
+
+    </div>
+    <button type="submit" class="btn ">
+        <i class="material-icons left">save</i>
+        Save
+    </button>
+</form>
+
 {% endblock %}

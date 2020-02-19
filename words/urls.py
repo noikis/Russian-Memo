@@ -1,12 +1,12 @@
 from django.urls import path
 
-from .views import (DeckCreateView, CardCreateView,
-                    DeckListView, CardListView, DeckUpdateView, CardUpdateView, CardDeleteView, DeckDeleteView)
+from .views import (CardCreateView, DeckListView, CardListView, DeckUpdateView,
+                    CardUpdateView, CardDeleteView, DeckDeleteView, deck_create)
 
 app_name = 'words'
 
 urlpatterns = [
-    path('decks/add/', DeckCreateView.as_view(), name='deck_add'),
+    path('decks/add/', deck_create, name='deck_add'),
     path('decks/', DeckListView.as_view(), name='deck_list'),
     path('<int:pk>/cards/', CardListView.as_view(), name='card_list'),
     path('<int:pk>/cards/add/', CardCreateView.as_view(), name='card_add'),
