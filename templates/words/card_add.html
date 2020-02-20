@@ -1,25 +1,28 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags %}
+{% load quiz_extras %}
 
 {% block content %}
-
-
-<style>
-    select {
-        display: block;
-    }
-</style>
-
 <h2 class="mb-3">Add a new Card</h2>
-<div class="row">
-    <div class="col md6 s8 l12">
-        <form method="post" novalidate>
-            {% csrf_token %}
-            {{ form }}
-            <button type="submit" class="btn ">Save</button>
-            <a href='#' class="btn" role="button">Nevermind</a>
-        </form>
+<form method="post" novalidate>
+    <div class="card-panel">
+        {% csrf_token %}
+        {% for field in form %}
+        {% for error in field.errors %}
+        <material-toast message="{{error}}" color="red"></material-toast>
+        {% endfor %}
+        <div class="input-field mb-2">
+            {% if field|field_type == "Textarea" %}
+            {{ field|addcss:'materialize-textarea' }}
+            {% else %}
+            {{field}}
+            {% endif %}
+            <label for="{{ field.id_for_label }}">{{ field.html_name }}</label>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-floating btn-large indigo ">
+            <i class=" material-icons ">add</i>
+        </button>
     </div>
-</div>
+</form>
 {% endblock %}

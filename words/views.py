@@ -12,20 +12,6 @@ from memorisation.models import Practice
 from account.decorators import teacher_required, student_required
 
 
-# @method_decorator([login_required, student_required], name='dispatch')
-# class DeckCreateView(CreateView):
-#     model = Deck
-#     fields = ('category', 'color',)
-#     template_name = 'words/deck_add.html'
-
-
-#     def form_valid(self, form):
-#         deck = form.save(commit=False)
-#         deck.student = self.request.user.student
-#         deck.save()
-#         messages.success(self.request, "Deck created!")
-#         return redirect('words:deck_list')
-
 @login_required
 @student_required
 def deck_create(request):
@@ -56,6 +42,7 @@ class DeckListView(ListView):
 class CardListView(ListView):
     model = Card
     template_name = 'words/card_list.html'
+    pk_url_kwarg = 'pk'
 
     def get_context_data(self):
         deck_id = self.kwargs['pk']
@@ -81,7 +68,7 @@ class CardCreateView(CreateView):
         practice.save()
 
         messages.success(self.request, "Card created!")
-        return redirect('words:card_list')
+        return redirect('account:dashboard')
 
 
 @method_decorator([login_required, student_required], name='dispatch')
