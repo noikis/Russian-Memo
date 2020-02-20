@@ -1,19 +1,31 @@
 {% extends 'base.html' %}
+
+{% load quiz_extras %}
+
 {% block content %}
-
-<h2 class="mb-3">
-    {{ card.word }}
-
-</h2>
-<div class="row mb-3">
-    <div class="col-md-6 col-sm-8 col-12">
-        <form method="post" novalidate>
-            {% csrf_token %}
-            {{ form }}
-            <button type="submit" class="btn ">Save changes</button>
-            <a href="#" class="btn btn-outline-secondary" role="button">Nevermind</a>
-            <a href="{% url 'words:card_delete' card.id %}" class="btn red float-right">Delete</a>
-        </form>
+<h2 class="mb-3">{{card.word}}</h2>
+<form method="post" novalidate>
+    <div class="card-panel">
+        {% csrf_token %}
+        {% for field in form %}
+        {% for error in field.errors %}
+        <material-toast message="{{error}}" color="red"></material-toast>
+        {% endfor %}
+        <div class="input-field mb-2">
+            {% if field|field_type == "Textarea" %}
+            {{ field|addcss:'materialize-textarea' }}
+            {% else %}
+            {{field}}
+            {% endif %}
+            <label for="{{ field.id_for_label }}">{{ field.html_name }}</label>
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn-floating btn-large teal ">
+            <i class=" material-icons ">save</i>
+        </button>
+        <a href="{% url 'words:card_delete' card.id %}" class="btn-floating btn-large red right">
+            <i class=" material-icons ">delete</i>
+        </a>
     </div>
-</div>
+</form>
 {% endblock %}

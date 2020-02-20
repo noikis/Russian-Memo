@@ -5,12 +5,12 @@
 {% block content %}
 <h2 class="mb-3">Confirm deletion</h2>
 <p class="flow-tex">
-    Are you sure you want to delete the question <strong>"{{ card.word }}"</strong>? There is no
+    Are you sure you want to delete the card <strong>"{{ card.word }}"</strong>? There is no
     going back.
 </p>
 <form method="post">
     {% csrf_token %}
     <button type="submit" class="btn red ">Yes, I'm sure</button>
-    <a href="{% url 'words:card_update' card.id %}" class="btn " role="button">Nevermind</a>
+    <a href="{% url 'words:card_update' card.id %}" class="btn blue-grey" role="button">Nevermind</a>
 </form>
 {% endblock %}
