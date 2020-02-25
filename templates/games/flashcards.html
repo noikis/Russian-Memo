@@ -1,3 +1,4 @@
+{% load humanize %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -19,7 +20,7 @@
     <div class="container">
         <div class="center">
 
-
+            {% if practice %}
             <div class="card-container ">
                 <div class="card white-text z-depth-3" id="flashcard">
                     <!-- 	Front	  -->
@@ -45,9 +46,15 @@
                     {{form}}
                     <input type="submit" value="submit" class="btn">
                 </form>
-                <h4>{{practice.next_practice }}</h4>
+                <h4>{{ practice.next_practice }}</h4>
 
             </div>
+            {% else %}
+            <p class="flow-text">
+                You don't have cards to practice today. <br>
+                Next practice {{ next_practice|naturalday }}.
+            </p>
+            {% endif %}
         </div>
 
     </div>
