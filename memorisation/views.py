@@ -10,11 +10,15 @@ from account.decorators import post_required
 @login_required
 def next_practice_item(request):
     practice = Practice.objects.filter(
-        student=request.user.student).order_by('next_practice')[0]
+        card__deck__student=request.user.student).order_by('next_practice')[0]
     form = RatingsForm(initial={"id": practice.id})
     card = practice.card
-    return render(request, 'games/flashcards.html', {
-        'practice': practice, 'card': card, 'form': form})
+    context = {
+        'practice': practice,
+        'card': card,
+        'form': form
+    }
+    return render(request, 'games/flashcards.html', context)
 
 
 @post_required

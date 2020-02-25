@@ -100,7 +100,6 @@ function countdown() {
     timeDisplay.innerHTML = time;
 }
 
-// Check game status
 
 getVoices = () => {
     voices = synth.getVoices();
@@ -111,6 +110,9 @@ getVoices();
 if (synth.onvoiceschanged !== undefined) {
     synth.onvoiceschanged = getVoices;
 }
+
+
+
 
 function speak() {
     // Check if Already speaking

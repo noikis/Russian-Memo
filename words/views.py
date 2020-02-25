@@ -62,13 +62,15 @@ class CardCreateView(CreateView):
     def form_valid(self, form):
         card = form.save(commit=False)
 
-        card.deck = Deck.objects.get(pk=self.kwargs['pk'])
+        deck_id = self.kwargs['pk']
+        card.deck = Deck.objects.get(pk=deck_id)
         card.save()
-        practice = Practice(card=card, student=self.request.user.student)
+
+        practice = Practice(card=card)
         practice.save()
 
         messages.success(self.request, "Card created!")
-        return redirect('account:dashboard')
+        return redirect('words:card_list', deck_id)
 
 
 @method_decorator([login_required, student_required], name='dispatch')
@@ -146,8 +148,10 @@ class DeckDeleteView(DeleteView):
         return reverse('words:deck_list')
 
 
+@login_required
+@student_required
 def cards(request):
-    queryset = Card.objects.all()
+    queryset = Card.objects.filter(deck__student=request.user.student)
     queryset = serialize('json', queryset)
     return HttpResponse(queryset, content_type="application/json")
 

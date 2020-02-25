@@ -3,11 +3,11 @@
 {% block content %}
 {% include 'layout/_toast.html' %}
 
-<table class="centered z-depth-2">
+<table class="centered striped z-depth-2">
     <thead>
         <tr>
             <th>Quiz</th>
-            <th>Length</th>
+            <th>Questions</th>
             <th></th>
         </tr>
     </thead>
@@ -15,14 +15,17 @@
         {% for quiz in quizzes %}
         <tr>
             <td>{{ quiz.name }}</td>
-            <td>{{ quiz.questions_count }} questions</td>
+            <td>{{ quiz.questions_count }} </td>
             <td>
-                <a href="{% url 'quiz:take_quiz' quiz.pk %}" class="btn">Start quiz</a>
+                <a href="{% url 'quiz:take_quiz' quiz.pk %}" role="button" class="btn">
+                    <i class="material-icons right">send</i>
+                    Start quiz
+                </a>
             </td>
         </tr>
         {% empty %}
         <tr>
-            <td class="bg-light text-center font-italic" colspan="4">No More Quizzes.</td>
+            <td colspan="4">No More Quizzes.</td>
         </tr>
         {% endfor %}
     </tbody>
