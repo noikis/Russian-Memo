@@ -1,0 +1,48 @@
+$primary-color: #302356;
+$secondary-color: #f5c42f;
+$text-color: #c5bbec;
+
+.home-body {
+  background-color: $primary-color;
+  color: #fff;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.primary-text {
+  color: $primary-color;
+}
+
+.secondary-text {
+  color: $secondary-color;
+}
+
+.bg-primary {
+  background-color: $primary-color;
+}
+
+.bg-secondary {
+  background-color: $secondary-color;
+}
+
+.btn.bg-secondary:hover {
+  background-color: darken($secondary-color, 15%);
+}
+
+.dropdown-content li > a {
+  color: #fff;
+}
+
+.dropdown-content li > a:hover {
+  color: $secondary-color;
+  background-color: darken($primary-color, 15%);
+
+}
+
+nav ul a:hover {
+  color: $secondary-color;
+}
+
+
+
+@import '_home.scss';
