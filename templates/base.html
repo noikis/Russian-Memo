@@ -15,7 +15,7 @@
     <title>Russian Memo</title>
   </head>
 
-  <body {% if request.path == '/' %} class="bg-primary" {% endif %} >
+  <body {% if request.path == '/' %} class="bg-primary" {% endif %}>
     <script src="{% static 'js/materialize.min.js' %}"></script>
     <style>
       .mb-2 {
@@ -27,19 +27,19 @@
       }
     </style>
 
-    {% if request.path != '/' %}
-        {% include 'layout/_navbar.html' %} 
+    {% if request.path != '/' %} {% include 'layout/_navbar.html' %}
 
-        <div class="container">
+    <div class="container">
+      {% endif %}
+      <!-- block -->
+      {% block content %} {% endblock %}
+      <!-- end -->
+      {% if request.path != '/'%}
+    </div>
     {% endif %}
-
-    {% block content %} {% endblock %}
-
-    {% if request.path != '/' %}
-        </div>
-    {% endif %}
-
-    {% include 'layout/_toast.html' %} 
+    <!-- toast -->
+    {% include 'layout/_toast.html' %}
+    <!-- footer -->
     {% include 'layout/_footer.html' %}
     <script src="{% static 'js/script.js' %}"></script>
   </body>

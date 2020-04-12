@@ -50,8 +50,14 @@ def login(request):
         # if user is in the Database
         if user is not None:
             auth.login(request, user)
-            messages.success(request, 'You are registrated!')
-            return redirect('account:dashboard')
+            messages.success(request, 'You are loged in!')
+
+            if user.is_student:
+                return redirect('quiz:quiz_list_student')
+            elif user.is_teacher:
+                return redirect('quiz:quiz_list')
+            else:
+                return redirect('account:login')
         # user not Found
         else:
             messages.error(request, "Bad credentials.")
@@ -64,8 +70,8 @@ def login(request):
 
 def logout(request):
     auth.logout(request)
-    # messages.success(request, "Вы вышли")
-    return render(request, 'pages/index.html')
+    messages.success(request, "Вы вышли")
+    return redirect('account:login')
 
 
 @login_required

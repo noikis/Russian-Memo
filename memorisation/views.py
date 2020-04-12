@@ -1,11 +1,14 @@
+from datetime import date
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, reverse, redirect
-from datetime import date
+from django.utils.decorators import method_decorator
+from account.decorators import post_required
+
 
 from .forms import RatingsForm
 from .models import Practice
-from account.decorators import post_required
+from account.decorators import student_required
 
 
 @login_required
@@ -55,9 +58,13 @@ def skip_practice(request, practice_id, redirect):
     return HttpResponseRedirect(reverse(redirect))
 
 
+@login_required
+@student_required
 def hangman(request):
     return render(request, 'games/hangman.html')
 
 
+@login_required
+@student_required
 def speed_typing(request):
     return render(request, 'games/speed_typing.html')

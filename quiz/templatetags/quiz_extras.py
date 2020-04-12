@@ -1,5 +1,8 @@
 from django import template
 from quiz.models import StudentAnswer
+from memorisation.models import Practice
+from datetime import date
+
 
 register = template.Library()
 
@@ -27,3 +30,5 @@ def addcss(value, arg):
     if css_classes and arg not in css_classes:
         css_classes = ' %s' % (arg)
     return value.as_widget(attrs={'class': css_classes})
+
+

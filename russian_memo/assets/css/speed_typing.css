@@ -1,21 +1,33 @@
+:root {
+  --primary: #302356;
+  --secondary: #f5c42f;
+}
 
-#speaker{
-    cursor: pointer;
-  }
-  
-  .popup-container{
-    background-color: rgba(0, 0, 0, 0.4);
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: none;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .popup {
-    padding: 20px;
-    text-align: center;
-  }
+.bg-primary {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.bg-secondary {
+  background-color: var(--secondary);
+}
+#speaker {
+  cursor: pointer;
+}
+
+.popup-container {
+  background-color: rgba(0, 0, 0, 0.4);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup {
+  padding: 20px;
+  text-align: center;
+}

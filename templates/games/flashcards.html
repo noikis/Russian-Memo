@@ -1,67 +1,63 @@
-{% load humanize %}
-{% load static %}
+{% load humanize %} {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{%  static 'css/materialize.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/flashcards.css' %}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{%  static 'css/materialize.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/flashcards.css' %}" />
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
 
     <title>Flip Card</title>
-</head>
+  </head>
 
-<body>
-
+  <body class="bg-primary">
     {% include 'layout/_navbar.html' %}
 
     <div class="container">
-        <div class="center">
-
-            {% if practice %}
-            <div class="card-container ">
-                <div class="card white-text z-depth-3" id="flashcard">
-                    <!-- 	Front	  -->
-                    <figure class="front card-content blue-grey">
-                        <h4>{{card.translation}}</h4>
-                    </figure>
-                    <!-- 	Back	 -->
-                    <figure class="back card-content indigo">
-                        <h4>{{card.word}}</h4>
-                        <div class="divider"></div>
-                        <p> <strong>explanation</strong>
-                            {{card.explanation}}
-                        </p>
-                        <p><strong>translation</strong> : {{card.translation}}. </p>
-                        <p> <strong>translation</strong> : {{card.synonymes}}.</p>
-
-
-                    </figure>
-                </div>
-                <button class="btn btn-large" id="flip-btn">Flip</button>
-                <form class="hide" action="{% url 'memo:process_rating' %}" method="post">
-                    {% csrf_token %}
-                    {{form}}
-                    <input type="submit" value="submit" class="btn">
-                </form>
-                <h4>{{ practice.next_practice }}</h4>
-
-            </div>
-            {% else %}
-            <p class="flow-text">
-                You don't have cards to practice today. <br>
-                Next practice {{ next_practice|naturalday }}.
-            </p>
-            {% endif %}
+      <div class="center">
+        {% if practice %}
+        <div class="card-container">
+          <div class="card white-text z-depth-3" id="flashcard">
+            <!-- 	Front	  -->
+            <figure class="front card-content white black-text center">
+              <h4>{{card.translation}}</h4>
+            </figure>
+            <!-- 	Back	 -->
+            <figure class="back card-content white black-text">
+              <h4>{{card.word}}</h4>
+              <div class="divider"></div>
+              <p>
+                <strong>explanation</strong>
+                {{card.explanation}}
+              </p>
+              <p><strong>translation</strong> : {{card.translation}}.</p>
+              <p><strong>translation</strong> : {{card.synonymes}}.</p>
+            </figure>
+          </div>
+          <button class="btn btn-large bg-secondary" id="flip-btn">Flip</button>
+          <form
+            class="hide"
+            action="{% url 'memo:process_rating' %}"
+            method="post"
+          >
+            {% csrf_token %} {{form}}
+            <input type="submit" value="submit" class="btn bg-secondary" />
+          </form>
+          <h4>{{ practice.next_practice }}</h4>
         </div>
-
+        {% else %}
+        <p class="flow-text">
+          You don't have cards to practice today. <br />
+          Next practice {{ next_practice|naturalday }}.
+        </p>
+        {% endif %}
+      </div>
     </div>
-
-</body>
-<script src="{% static 'js/materialize.min.js' %}"></script>
-<script src="{% static 'js/flashcards.js' %}"></script>
-
-
+  </body>
+  <script src="{% static 'js/materialize.min.js' %}"></script>
+  <script src="{% static 'js/flashcards.js' %}"></script>
 </html>

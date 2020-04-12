@@ -1,124 +1,133 @@
-<ul id="dropdown1" class="dropdown-content bg-primary " >
-  <li><a href="{% url 'memo:hangman' %}">Hangman</a></li>
-  <li class="divider"></li>
-  <li><a href="{% url 'memo:flashcards' %}">Flash Cards</a></li>
+{% load memorisation_extras %}
+<ul id="dropdown1" class="dropdown-content bg-primary">
+  <li><a href="{% url 'memo:hangman' %}">Hangman</a></li> 
   <li class="divider"></li>
   <li><a href="{% url 'memo:speed_typing' %}">Speed Typing</a></li>
 </ul>
-<nav 
-    {% if request.path == '/' %}
-        class="transparent" 
-    {% else %}    
-        class="indigo darken-2"
-    {% endif %}"
->
-  <div class="nav-wrapper" >
-    <div class="container">
-      <a href="#" class="brand-logo"> Memo</a>
-      <a href="#" class="sidenav-trigger" data-target="mobile-nav">
-        <i class="material-icons">menu</i>
-      </a>
-      <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li><a href="{% url 'home' %}">Home</a></li>
-        {% if request.user.is_authenticated %} {% if request.user.is_teacher %}
-        <li>
-          <a href="{% url 'quiz:quiz_list' %}"> my Quizzes</a>
-        </li>
+{% if request.path == '/' %}
+  <nav class="transparent">
+{% else %}
+  <nav class="bg-primary">
+{% endif %}
+    <div class="nav-wrapper">
+      <div class="container">
+        <a href="#" class="brand-logo"> Memo</a>
+        <a href="#" class="sidenav-trigger" data-target="mobile-nav">
+          <i class="material-icons">menu</i>
+        </a>
+        <ul id="nav-mobile" class="right hide-on-med-and-down">
+          <li><a href="{% url 'home' %}">Home</a></li>
+        {% if request.user.is_authenticated %} 
+          {% if request.user.is_teacher %}
+          <li>
+            <a href="{% url 'quiz:quiz_list' %}"> my Quizzes</a>
+          </li>
 
-        {% elif request.user.is_student %}
-        <li>
-          <a href="{% url 'quiz:quiz_list_student' %}"> my Quizzes</a>
-        </li>
-        <li>
-          <a href="{% url 'quiz:taken_quiz' %}"> Taken Quizzes</a>
-        </li>
-        <li>
-          <a href="{% url 'words:deck_list' %}"> Decks</a>
-        </li>
-        <li>
-          <a class="dropdown-trigger" href="#!" data-target="dropdown1"
-            >Games<i class="material-icons right">arrow_drop_down</i></a
-          >
-        </li>
+          {% elif request.user.is_student %}
+          <li>
+            <a href="{% url 'quiz:quiz_list_student' %}"> my Quizzes</a>
+          </li>
+          <li>
+            <a href="{% url 'quiz:taken_quiz' %}"> Taken Quizzes</a>
+          </li>
+          <li>
+            <a href="{% url 'words:deck_list' %}"> Decks</a>
+          </li>
+          <li>
+            <a href="{% url 'memo:flashcards' %}">
+              Flash Cards 
+              <span class="badge bg-secondary text-white">{% to_practice request.user %}</span>
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-trigger" href="#!" data-target="dropdown1"
+              >Games<i class="material-icons right">arrow_drop_down</i></a
+            >
+          </li>
 
-        {% endif %}
+          {% endif %}
 
-        <li>
-          <a
-            href="{% url 'account:logout' %}"
-            class="waves-effect waves-light btn bg-secondary"
-            >Log out
-            <i class="material-icons right">exit_to_app</i>
-          </a>
-        </li>
+          <li>
+            <a
+              href="{% url 'account:logout' %}"
+              class="waves-effect waves-light btn bg-secondary"
+              >Log out
+              <i class="material-icons right">exit_to_app</i>
+            </a>
+          </li>
         {% else %}
-        <li>
-          <a href="{% url 'account:student_registration' %}">Student Signup</a>
-        </li>
-        <li>
-          <a href="{% url 'account:teacher_registration' %}">Teacher Signup</a>
-        </li>
-        <li><a href="{% url 'account:login' %}">Sign In</a></li>
+          <li>
+            <a href="{% url 'account:student_registration' %}"
+              >Student Signup</a
+            >
+          </li>
+          <li>
+            <a href="{% url 'account:teacher_registration' %}"
+              >Teacher Signup</a
+            >
+          </li>
+          <li><a href="{% url 'account:login' %}">Sign In</a></li>
 
         {% endif %}
-      </ul>
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
+  </nav>
 
-<!-- Side Nav -->
-<ul class="sidenav" id="mobile-nav">
-  <li>
-    <h4 class="deep-purple-text center">Russian Memo</h4>
-  </li>
-  <li>
-    <div class="divider"></div>
-  </li>
-  <li>
-    <a href="{% url 'home' %}" class="black-text">
-      <i class="material-icons black-text">home</i>Home
-    </a>
-  </li>
-  {% if request.user.is_authenticated %}
-  <li>
-    <a href="{% url 'account:dashboard' %}" class="black-text">
-      <i class="material-icons black-text ">dashboard</i>
-      Dashboard
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'account:logout' %}" class="black-text">
-      <i class="material-icons black-text ">exit_to_app</i>
-      Logout
-    </a>
-  </li>
-  {% else %}
-  <li>
-    <a href="{% url 'account:student_registration' %}" class="black-text">
-      <i class="material-icons black-text">event_seat</i> Student Registration
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'account:teacher_registration' %}" class="black-text">
-      <i class="material-icons black-text">event_seat</i> Teacher Registration
-    </a>
-  </li>
-  <li>
-    <a href="{% url 'account:login' %}" class="black-text">
-      <i class="material-icons black-text">event_seat</i> Sign In
-    </a>
-  </li>
-  {% endif %}
-</ul>
+  <!-- Side Nav -->
+  <ul class="sidenav" id="mobile-nav">
+    <li>
+      <h4 class="deep-purple-text center">Russian Memo</h4>
+    </li>
+    <li>
+      <div class="divider"></div>
+    </li>
+    <li>
+      <a href="{% url 'home' %}" class="black-text">
+        <i class="material-icons black-text">home</i>Home
+      </a>
+    </li>
+    {% if request.user.is_authenticated %}
+    <li>
+      <a href="{% url 'account:dashboard' %}" class="black-text">
+        <i class="material-icons black-text">dashboard</i>
+        Dashboard
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'account:logout' %}" class="black-text">
+        <i class="material-icons black-text">exit_to_app</i>
+        Logout
+      </a>
+    </li>
+    {% else %}
+    <li>
+      <a href="{% url 'account:student_registration' %}" class="black-text">
+        <i class="material-icons black-text">event_seat</i> Student Registration
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'account:teacher_registration' %}" class="black-text">
+        <i class="material-icons black-text">event_seat</i> Teacher Registration
+      </a>
+    </li>
+    <li>
+      <a href="{% url 'account:login' %}" class="black-text">
+        <i class="material-icons black-text">event_seat</i> Sign In
+      </a>
+    </li>
+    {% endif %}
+  </ul>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const sideNav = document.querySelector('.sidenav');
-    M.Sidenav.init(sideNav, {
-      menuWidth: 100
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const sideNav = document.querySelector('.sidenav');
+      M.Sidenav.init(sideNav, {
+        menuWidth: 100,
+      });
+
+      const dropDown = document.querySelectorAll('.dropdown-trigger');
+      M.Dropdown.init(dropDown);
     });
-
-    const dropDown = document.querySelectorAll('.dropdown-trigger');
-    M.Dropdown.init(dropDown);
-  });
-</script>
+  </script>
+</nav>

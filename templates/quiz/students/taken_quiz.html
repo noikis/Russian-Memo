@@ -1,27 +1,35 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
 
-{% block content %}
-
-<table class="table centered z-depth-2">
-    <thead>
-        <tr>
-            <th>Quiz</th>
-            <th>%</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for taken_quiz in taken_quizzes %}
-        <tr>
-            <td>{{ taken_quiz.quiz.name }}</td>
-            <td>{{ taken_quiz.percentage }}</td>
-            <td><a href="{% url 'quiz:student_quiz_results' taken_quiz.quiz.pk %}" class="btn">View Results</a></td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td class="bg-light text-center font-italic" colspan="3">You haven't completed any quiz yet.</td>
-        </tr>
-        {% endfor %}
-    </tbody>
+<table class="table centered white z-depth-2">
+  <thead>
+    <tr>
+      <th>Quiz</th>
+      <th>%</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for taken_quiz in taken_quizzes %}
+    <tr>
+      <td>{{ taken_quiz.quiz.name }}</td>
+      <td>{{ taken_quiz.percentage }}</td>
+      <td>
+        <a
+          href="{% url 'quiz:student_quiz_results' taken_quiz.quiz.pk %}"
+          class="btn bg-secondary"
+        >
+          View Results
+          <i class="material-icons right">remove_red_eye</i>
+        </a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td class="bg-light text-center font-italic" colspan="3">
+        You haven't completed any quiz yet.
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
 </table>
 {% endblock %}
