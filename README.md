@@ -27,4 +27,4 @@ python manage.py collectstatic
 
 python manage.py runserver
 ```
-Opem localhost:8000
+Open localhost:8000
