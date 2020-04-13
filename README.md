@@ -13,14 +13,18 @@ cd Russian-Memo
 
 python -m venv venv
 
-
 ### in a Bash  Command Shell
 source venv/Scripts/activate
 
-### in Windows Command Shell
+### in Windows Command Shell :
 venv/Scripts\activate.bat
 
-pip freeze > requirements.txt
+pip install -r requirements.txt
+
+python manage.py migrate
+
+python manage.py collectstatic
 
 python manage.py runserver
 ```
+Opem localhost:8000
