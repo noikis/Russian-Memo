@@ -31,11 +31,17 @@
               <h4>{{card.word}}</h4>
               <div class="divider"></div>
               <p>
-                <strong>explanation</strong>
+                <strong>explanation</strong><br />
                 {{card.explanation}}
               </p>
-              <p><strong>translation</strong> : {{card.translation}}.</p>
-              <p><strong>translation</strong> : {{card.synonymes}}.</p>
+              <p>
+                <strong>translation</strong> : <br />
+                {{card.translation}}.
+              </p>
+              <p>
+                <strong>synonyms</strong> : <br />
+                {{card.synonymes}}.
+              </p>
             </figure>
           </div>
           <button class="btn btn-large bg-secondary" id="flip-btn">Flip</button>

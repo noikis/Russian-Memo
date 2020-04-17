@@ -20,7 +20,7 @@
 
 .card-container {
   width: 300px;
-  height: 300px;
+  height: 400px;
   margin-top: 2rem;
 }
 
@@ -51,4 +51,10 @@
 #flip-btn {
   display: block;
   width: 100%;
+}
+
+@media (min-width: 1280px) {
+  .card-container {
+    width: 400px;
+  }
 }
