@@ -4,7 +4,7 @@ astroid==2.3.3
 autopep8==1.5
 colorama==0.4.3
 crispy-forms-materialize==0.2
-Django==3.0.3
+Django==3.0.7
 django-crispy-forms==1.8.1
 django-debug-toolbar==2.2
 django-material-admin==1.6.36
