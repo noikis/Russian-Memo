@@ -13,7 +13,6 @@ name_space = 'main'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('account/', include('account.urls', namespace='account',)),
-    path('quiz/', include('quiz.urls', namespace='quiz',)),
     path('words/', include('words.urls', namespace='words',)),
     path('games/', include('memorisation.urls')),
 
