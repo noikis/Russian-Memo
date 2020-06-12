@@ -13,12 +13,11 @@ from account.decorators import teacher_required, student_required
 
 
 @login_required
-@student_required
 def deck_create(request):
     if request.method == "POST":
         category = request.POST['category']
         color = request.POST['color']
-        student = request.user.student
+        student = request.user
 
         deck = Deck(student=student, category=category, color=color)
         deck.save()
@@ -34,11 +33,11 @@ class DeckListView(ListView):
     template_name = 'words/deck_list.html'
 
     def get_queryset(self):
-        queryset = Deck.objects.filter(student=self.request.user.student)
+        queryset = Deck.objects.filter(student=self.request.user)
         return queryset
 
 
-@method_decorator([login_required, student_required], name='dispatch')
+@method_decorator([login_required], name='dispatch')
 class CardListView(ListView):
     model = Card
     template_name = 'words/card_list.html'
@@ -73,7 +72,7 @@ class CardCreateView(CreateView):
         return redirect('words:card_list', deck_id)
 
 
-@method_decorator([login_required, student_required], name='dispatch')
+@method_decorator([login_required], name='dispatch')
 class DeckUpdateView(UpdateView):
     model = Deck
     fields = ('category', 'color', )
@@ -81,14 +80,14 @@ class DeckUpdateView(UpdateView):
     template_name = 'words/deck_update.html'
 
     def get_queryset(self):
-        return self.request.user.student.decks.all()
+        return self.request.user.decks.all()
 
     def get_success_url(self):
         messages.success(self.request, "Deck updated!")
         return reverse('words:deck_update', kwargs={'pk': self.object.pk})
 
 
-@method_decorator([login_required, student_required], name='dispatch')
+@method_decorator([login_required], name='dispatch')
 class CardUpdateView(UpdateView):
     model = Card
     fields = ('word', 'explanation', 'translation',  'synonymes')
@@ -104,7 +103,7 @@ class CardUpdateView(UpdateView):
         return reverse('words:card_update', kwargs={'pk': self.object.pk})
 
 
-@method_decorator([login_required, student_required], name='dispatch')
+@method_decorator([login_required], name='dispatch')
 class CardDeleteView(DeleteView):
     model = Card
     context_object_name = 'card'
@@ -126,7 +125,7 @@ class CardDeleteView(DeleteView):
         return reverse('words:deck_list')
 
 
-@method_decorator([login_required, student_required], name='dispatch')
+@method_decorator([login_required], name='dispatch')
 class DeckDeleteView(DeleteView):
     model = Deck
     context_object_name = 'deck'

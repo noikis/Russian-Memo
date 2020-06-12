@@ -18,18 +18,7 @@
         <ul id="nav-mobile" class="right hide-on-med-and-down">
           <li><a href="{% url 'home' %}">Home</a></li>
         {% if request.user.is_authenticated %} 
-          {% if request.user.is_teacher %}
-          <li>
-            <a href="{% url 'quiz:quiz_list' %}"> my Quizzes</a>
-          </li>
-
-          {% elif request.user.is_student %}
-          <li>
-            <a href="{% url 'quiz:quiz_list_student' %}"> my Quizzes</a>
-          </li>
-          <li>
-            <a href="{% url 'quiz:taken_quiz' %}"> Taken Quizzes</a>
-          </li>
+          {% if request.user.is_student %}
           <li>
             <a href="{% url 'words:deck_list' %}"> Decks</a>
           </li>

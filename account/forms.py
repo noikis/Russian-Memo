@@ -4,7 +4,7 @@ from django.db import transaction
 from django.forms.utils import ValidationError
 
 from crispy_forms.helper import FormHelper
-from .models import User, Student
+from .models import User
 
 
 class TeacherSignUpForm(UserCreationForm):
@@ -13,7 +13,7 @@ class TeacherSignUpForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_teacher = True
+        # user.is_teacher = True
         if commit:
             user.save()
         return user
@@ -33,5 +33,5 @@ class StudentSignUpForm(UserCreationForm):
         user = super().save(commit=False)
         user.is_student = True
         user.save()
-        student = Student.objects.create(user=user)
+        # student = Student.objects.create(user=user)
         return user

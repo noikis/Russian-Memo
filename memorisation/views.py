@@ -67,4 +67,5 @@ def hangman(request):
 @login_required
 @student_required
 def speed_typing(request):
+    ''' render the speed typing game '''
     return render(request, 'games/speed_typing.html')

@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import fields
 
-from account.models import Student
 from words.models import Card
 from .algorithm import interval
 

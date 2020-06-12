@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView
 
-from .models import User, Student
+from .models import User
 from .forms import StudentSignUpForm, TeacherSignUpForm
 from .decorators import student_required, teacher_required
 
@@ -52,12 +52,9 @@ def login(request):
             auth.login(request, user)
             messages.success(request, 'You are loged in!')
 
-            if user.is_student:
-                return redirect('quiz:quiz_list_student')
-            elif user.is_teacher:
-                return redirect('quiz:quiz_list')
-            else:
-                return redirect('account:login')
+           
+            return redirect('words:deck_list')
+            
         # user not Found
         else:
             messages.error(request, "Bad credentials.")

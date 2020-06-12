@@ -7,7 +7,7 @@ register = template.Library()
 @register.simple_tag
 def to_practice(user):
     student_practice = Practice.objects.filter(
-        card__deck__student=user.student).order_by('next_practice')
+        card__deck__student=user).order_by('next_practice')
 
     practice_count = student_practice.filter(
         next_practice__lte=date.today()).count()

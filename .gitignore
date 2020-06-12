@@ -117,3 +117,9 @@ dmypy.json
 .pyre/
 
 # End of https://www.gitignore.io/api/django
+
+/node_modules
+
+/docs
+exemple.py
+jsdoc.json

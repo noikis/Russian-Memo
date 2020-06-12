@@ -1,6 +1,5 @@
 {% extends 'base.html' %}
 
-{% load quiz_extras %}
 
 {% block content %}
 <h2 class="mb-3">{{card.word}}</h2>
@@ -12,11 +11,7 @@
         <material-toast message="{{error}}" color="red"></material-toast>
         {% endfor %}
         <div class="input-field mb-2">
-            {% if field|field_type == "Textarea" %}
-            {{ field|addcss:'materialize-textarea' }}
-            {% else %}
             {{field}}
-            {% endif %}
             <label for="{{ field.id_for_label }}">{{ field.html_name }}</label>
         </div>
         {% endfor %}
