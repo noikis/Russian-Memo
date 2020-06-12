@@ -120,6 +120,4 @@ dmypy.json
 
 /node_modules
 
-/docs
 exemple.py
-jsdoc.json
