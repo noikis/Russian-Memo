@@ -7,7 +7,7 @@ Students can also play games like the hangman.
 ## Getting Started
 
 ```
-git clone https://github.com/ilyasEzz/Russian-Memo.git
+git clone https://github.com/noikis/Russian-Memo.git
 
 cd Russian-Memo
 
