@@ -2,7 +2,7 @@ from django.urls import path, include
 from django.contrib.auth.views import LoginView
 
 from .views import (StudentSignUpView, TeacherSignUpView, logout,
-                    login, dashboard, )
+                    login, dashboard, telegram_auth, )
 
 app_name = 'account'
 
@@ -14,4 +14,5 @@ urlpatterns = [
          name='student_registration'),
     path('teacher_registration/', TeacherSignUpView.as_view(),
          name='teacher_registration'),
+    path('telegram_auth/', telegram_auth, name='telegram_auth'),
 ]

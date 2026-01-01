@@ -12,6 +12,7 @@ class Student(models.Model):
         User, on_delete=models.CASCADE, primary_key=True)
     score = models.PositiveIntegerField(default=0)
     quizzes = models.ManyToManyField("quiz.Quiz", through='quiz.TakenQuiz')
+    telegram_id = models.BigIntegerField(blank=True, null=True, unique=True)
 
     def get_unanswered_questions(self, quiz):
         answered_questions = self.quiz_answers \

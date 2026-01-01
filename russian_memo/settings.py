@@ -11,9 +11,21 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# Load environment variables from .env if present (simple parser to avoid extra deps)
+ENV_PATH = Path(BASE_DIR) / '.env'
+if ENV_PATH.is_file():
+    with ENV_PATH.open() as env_file:
+        for line in env_file:
+            if not line or line.lstrip().startswith('#') or '=' not in line:
+                continue
+            key, _, value = line.strip().partition('=')
+            if key and value and key not in os.environ:
+                os.environ[key] = value
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +37,7 @@ SECRET_KEY = '(^zh-0=n*kad5k@=5_v*@x!-^xm0@4t2bae==gik3bt(z#!#h7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['kameron-benefic-madelaine.ngrok-free.dev', '127.0.0.1']
 
 
 # Application definition
@@ -195,3 +207,17 @@ INTERNAL_IPS = [
     '127.0.0.1',
     # ...
 ]
+
+# If you expose the site via a public domain (e.g., ngrok), add it here.
+CSRF_TRUSTED_ORIGINS = [
+    'http://kameron-benefic-madelaine.ngrok-free.dev',
+    'https://kameron-benefic-madelaine.ngrok-free.dev',
+]
+
+# Telegram Login
+TELEGRAM_BOT_NAME = os.environ.get('TELEGRAM_BOT_NAME')
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
+try:
+    TELEGRAM_LOGIN_MAX_AGE = int(os.environ.get('TELEGRAM_LOGIN_MAX_AGE', 24 * 60 * 60))
+except (TypeError, ValueError):
+    TELEGRAM_LOGIN_MAX_AGE = 24 * 60 * 60
