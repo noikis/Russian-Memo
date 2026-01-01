@@ -1,7 +1,8 @@
 import hashlib
 import hmac
 import time
-
+import json
+from init_data_py import InitData 
 from django.conf import settings
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -10,6 +11,9 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView
 from django.views.decorators.csrf import csrf_exempt
+from django.views import View
+from django.views.generic import TemplateView
+from django.http import JsonResponse, HttpResponseBadRequest
 
 from .models import User, Student
 from .forms import StudentSignUpForm, TeacherSignUpForm
@@ -125,57 +129,114 @@ def _validate_telegram_payload(payload: dict):
     return True, check_data
 
 
-@csrf_exempt
-def telegram_auth(request):
+def _validate_webapp_init_data(init_data_raw: str):
     """
-    Create/login a student via Telegram Login Widget callback.
+    Validate Telegram WebApp initData (mini app) following
+    https://core.telegram.org/bots/webapps#validating-data-received-via-the-mini-app.
+    Returns (is_valid, data_dict_or_error).
     """
-    payload = request.GET.dict() if request.method == 'GET' else request.POST.dict()
-    is_valid, data = _validate_telegram_payload(payload)
-    if not is_valid:
-        messages.error(request, data)
-        return redirect('account:student_registration')
+    bot_token = getattr(settings, 'TELEGRAM_BOT_TOKEN', None)
+    if not bot_token:
+        return False, 'Telegram login is not configured.'
+    if not init_data_raw:
+        return False, 'Missing initData.'
 
-    telegram_id = data.get('id')
-    if not telegram_id:
-        messages.error(request, 'Telegram user id is required.')
-        return redirect('account:student_registration')
+    max_age = getattr(settings, 'TELEGRAM_LOGIN_MAX_AGE', 24 * 60 * 60)
+
+    if not InitData:
+        return False, 'init-data-py is required to verify Telegram initData.'
 
     try:
-        telegram_id_int = int(telegram_id)
-    except (TypeError, ValueError):
-        messages.error(request, 'Invalid Telegram user id.')
-        return redirect('account:student_registration')
+        init_data = InitData.parse(init_data_raw)
 
+        is_valid = init_data.validate(
+            bot_token=bot_token,
+            lifetime=3600,   # seconds
+        )
+
+        user = init_data.user  # parsed user object (if valid)
+        return True, user
+    except Exception as exc:
+        return False, f'Telegram signature could not be verified ({exc}).'
+
+
+def _get_or_create_student_from_telegram(user_data):
     student = (
         Student.objects.select_related('user')
-        .filter(telegram_id=telegram_id_int)
+        .filter(telegram_id=user_data.id)
         .first()
     )
-
     if student:
         user = student.user
         if not user.is_student:
-            messages.error(request, 'Only students can log in with Telegram.')
-            return redirect('account:login')
-    else:
-        username = data.get('username') or f'tg_{telegram_id_int}'
-        base_username = username
-        index = 1
-        while User.objects.filter(username=username).exists():
-            username = f'{base_username}_{index}'
-            index += 1
+            return None, 'Only students can log in with Telegram.'
+        return user, None
 
-        user = User(
-            username=username,
-            first_name=data.get('first_name') or '',
-            last_name=data.get('last_name') or '',
-            is_student=True,
-        )
-        user.set_unusable_password()
-        user.save()
-        student = Student.objects.create(user=user, telegram_id=telegram_id_int)
 
-    auth.login(request, user)
-    messages.success(request, 'Добро пожаловать! Вы вошли через Telegram.')
-    return redirect('quiz:quiz_list_student')
+    user = User(
+        username=user_data.username or f'tg_user_{user_data.id}',
+        first_name=user_data.first_name or '',
+        last_name=user_data.last_name or '',
+        is_student=True,
+    )
+    user.set_unusable_password()
+    user.save()
+    Student.objects.create(user=user, telegram_id=telegram_id_int)
+    return user, None
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class TelegramAuthView(View):
+    """
+    Create/login a student via Telegram Login Widget callback (GET/POST).
+    """
+
+    def get(self, request, *args, **kwargs):
+        return self.handle(request)
+
+    def post(self, request, *args, **kwargs):
+        return self.handle(request)
+
+    def handle(self, request):
+        payload = request.GET.dict() if request.method == 'GET' else request.POST.dict()
+        is_valid, data = _validate_telegram_payload(payload)
+        if not is_valid:
+            messages.error(request, data)
+            return redirect('account:student_registration')
+
+        user, error = _get_or_create_student_from_telegram(data)
+        if error:
+            messages.error(request, error)
+            return redirect('account:student_registration')
+
+        auth.login(request, user)
+        messages.success(request, 'Добро пожаловать! Вы вошли через Telegram.')
+        return redirect('quiz:quiz_list_student')
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class TelegramWebAppAuthView(View):
+    """
+    Auto-login for Telegram mini app using initData (POST).
+    """
+
+    def post(self, request, *args, **kwargs):
+        init_data_raw = request.POST.get('init_data')
+        is_valid, data = _validate_webapp_init_data(init_data_raw)
+        if not is_valid:
+            return JsonResponse({'ok': False, 'error': data}, status=400)
+
+        user, error = _get_or_create_student_from_telegram(data)
+        if error:
+            return JsonResponse({'ok': False, 'error': error}, status=400)
+
+        auth.login(request, user)
+        redirect_url = str(reverse_lazy('quiz:quiz_list_student'))
+        return JsonResponse({'ok': True, 'redirect': redirect_url})
+
+
+class TelegramMiniAppAuthPageView(TemplateView):
+    """
+    Renders the mini-app auth bootstrap page that posts initData to the backend.
+    """
+    template_name = 'account/telegram_mini_app_auth.html'
