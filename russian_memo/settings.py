@@ -37,7 +37,7 @@ SECRET_KEY = '(^zh-0=n*kad5k@=5_v*@x!-^xm0@4t2bae==gik3bt(z#!#h7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['kameron-benefic-madelaine.ngrok-free.dev', '127.0.0.1']
+ALLOWED_HOSTS = [os.environ.get('TELEGRAM_LOGIN_HOST', 'localhost'), '127.0.0.1', 'localhost']
 
 
 # Application definition
