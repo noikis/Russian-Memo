@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.humanize',
     'django.contrib.staticfiles',
-    'debug_toolbar',
+    'bot',
     'memorisation',
     'quiz',
     'words',
@@ -67,7 +67,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -198,15 +197,6 @@ MATERIAL_ADMIN_SITE = {
 
     }
 }
-
-# Debug Toolbar Settings
-
-
-INTERNAL_IPS = [
-    # ...
-    '127.0.0.1',
-    # ...
-]
 
 # If you expose the site via a public domain (e.g., ngrok), add it here.
 CSRF_TRUSTED_ORIGINS = [

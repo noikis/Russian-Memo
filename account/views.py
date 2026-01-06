@@ -27,7 +27,7 @@ class StudentSignUpView(CreateView):
 
     def get_context_data(self, **kwargs):
         kwargs['user_type'] = 'student'
-        kwargs['telegram_bot'] = getattr(settings, 'TELEGRAM_BOT_NAME', None)
+        kwargs['bot'] = getattr(settings, 'TELEGRAM_BOT_NAME', None)
         kwargs['telegram_auth_url'] = self.request.build_absolute_uri(
             str(reverse_lazy('account:telegram_auth'))
         )

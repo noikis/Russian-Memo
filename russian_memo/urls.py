@@ -21,10 +21,3 @@ urlpatterns = [
     path('api/cards/', cards, name='cards'),
     path('fetch/', fetch_cards, name='fetch_cards'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-if settings.DEBUG:
-    import debug_toolbar
-    urlpatterns = [
-        path('__debug__/', include(debug_toolbar.urls)),
-    ] + urlpatterns

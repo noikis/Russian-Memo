@@ -4,7 +4,6 @@ colorama==0.4.3
 crispy-forms-materialize==0.2
 Django==3.0.3
 django-crispy-forms==1.8.1
-django-debug-toolbar==2.2
 django-material-admin==1.6.36
 django-materialize-form==0.1.1
 django-materializecss-form==1.1.16
