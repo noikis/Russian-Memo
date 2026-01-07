@@ -6,7 +6,8 @@ from telegram import Update
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes
 
-from bot.services.dictiinary_service import DictionaryService
+from bot.services.dictionary_service import DictionaryService
+from bot.services.translation_service import TranslationService
 
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 logger = logging.getLogger(__name__)
@@ -56,12 +57,25 @@ class Command(BaseCommand):
             response = service.define(word)
             for chunk in _split_message(response):
                 await update.message.reply_text(chunk, parse_mode=ParseMode.MARKDOWN_V2)
+        
+        async def translate(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+            if not context.args or len(context.args) == 0:
+                await update.message.reply_text("Usage: /translate <text>")
+                return
+
+            text = " ".join(context.args)
+            service = TranslationService()
+            response = service.translate(text)
+            await update.message.reply_text(response)
+
 
         async def on_error(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
             logger.exception("Unhandled exception while processing update", exc_info=context.error)
+        
 
         
 
         app.add_handler(CommandHandler("define", define))
+        app.add_handler(CommandHandler("translate", translate))
         app.add_error_handler(on_error)
         app.run_polling()
