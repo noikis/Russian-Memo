@@ -2,25 +2,25 @@
 
 {% block content %}
 
-<a href="{% url 'words:deck_list' %}" type="submit" class="btn blue-grey">
+<a href="{% url 'words:deck_list' %}" type="submit" class="btn blue-grey mt-2">
     <i class="material-icons left">arrow_back</i>
-    Back
-</a href="">
-<h2 class="mb-3">Add a new Deck</h2>
+    Назад
+</a>
+<h2 class="mb-3">Добавить новую колоду</h2>
 <form method="POST" class=" card-panel">
     {% csrf_token %}
     <div class=" input-field">
-        <input id="category" name='category' type="text" value="New Deck" class="">
-        <label for="category">Category</label>
+        <input id="category" name='category' type="text" value="Новая колода" class="">
+        <label for="category">Категория</label>
     </div>
     <div class="" style="margin-bottom: 2rem;">
-        <label for="color">Color</label>
+        <label for="color">Цвет</label>
         <input type="color" name="color" id="color">
 
     </div>
     <button type="submit" class="btn ">
         <i class="material-icons left">save</i>
-        Save
+        Сохранить
     </button>
 </form>
 

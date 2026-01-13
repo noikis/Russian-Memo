@@ -27,7 +27,7 @@ class StudentSignUpView(CreateView):
 
     def get_context_data(self, **kwargs):
         kwargs['user_type'] = 'student'
-        kwargs['bot'] = getattr(settings, 'TELEGRAM_BOT_NAME', None)
+        kwargs['telegram_bot'] = getattr(settings, 'TELEGRAM_BOT_NAME', None)
         kwargs['telegram_auth_url'] = self.request.build_absolute_uri(
             str(reverse_lazy('account:telegram_auth'))
         )
@@ -64,7 +64,7 @@ def login(request):
         # if user is in the Database
         if user is not None:
             auth.login(request, user)
-            messages.success(request, 'You are loged in!')
+            messages.success(request, 'Вы вошли в систему.')
 
             if user.is_student:
                 return redirect('quiz:quiz_list_student')
@@ -74,7 +74,7 @@ def login(request):
                 return redirect('account:login')
         # user not Found
         else:
-            messages.error(request, "Bad credentials.")
+            messages.error(request, "Неверные учетные данные.")
             return redirect('account:login')
 
     # accessing the login page
@@ -100,11 +100,11 @@ def _validate_telegram_payload(payload: dict):
     """
     bot_token = getattr(settings, 'TELEGRAM_BOT_TOKEN', None)
     if not bot_token:
-        return False, 'Telegram login is not configured.'
+        return False, 'Вход через Telegram не настроен.'
 
     received_hash = payload.get('hash')
     if not received_hash:
-        return False, 'Missing Telegram signature.'
+        return False, 'Отсутствует подпись Telegram.'
 
     check_data = {k: v for k, v in payload.items() if k != 'hash'}
     check_string = '\n'.join(
@@ -115,16 +115,16 @@ def _validate_telegram_payload(payload: dict):
         secret_key, check_string.encode(), hashlib.sha256
     ).hexdigest()
     if computed_hash != received_hash:
-        return False, 'Telegram signature could not be verified.'
+        return False, 'Подпись Telegram не прошла проверку.'
 
     try:
         auth_date = int(check_data.get('auth_date', 0))
     except (TypeError, ValueError):
-        return False, 'Invalid auth date.'
+        return False, 'Некорректная дата авторизации.'
 
     max_age = getattr(settings, 'TELEGRAM_LOGIN_MAX_AGE', 24 * 60 * 60)
     if auth_date and (time.time() - auth_date) > max_age:
-        return False, 'Telegram login request expired.'
+        return False, 'Срок действия запроса на вход через Telegram истек.'
 
     return True, check_data
 
@@ -137,14 +137,14 @@ def _validate_webapp_init_data(init_data_raw: str):
     """
     bot_token = getattr(settings, 'TELEGRAM_BOT_TOKEN', None)
     if not bot_token:
-        return False, 'Telegram login is not configured.'
+        return False, 'Вход через Telegram не настроен.'
     if not init_data_raw:
-        return False, 'Missing initData.'
+        return False, 'Отсутствуют initData.'
 
     max_age = getattr(settings, 'TELEGRAM_LOGIN_MAX_AGE', 24 * 60 * 60)
 
     if not InitData:
-        return False, 'init-data-py is required to verify Telegram initData.'
+        return False, 'Для проверки Telegram initData требуется init-data-py.'
 
     try:
         init_data = InitData.parse(init_data_raw)
@@ -157,7 +157,7 @@ def _validate_webapp_init_data(init_data_raw: str):
         user = init_data.user  # parsed user object (if valid)
         return True, user
     except Exception as exc:
-        return False, f'Telegram signature could not be verified ({exc}).'
+        return False, f'Подпись Telegram не прошла проверку ({exc}).'
 
 
 def _get_or_create_student_from_telegram(user_data):
@@ -169,7 +169,7 @@ def _get_or_create_student_from_telegram(user_data):
     if student:
         user = student.user
         if not user.is_student:
-            return None, 'Only students can log in with Telegram.'
+            return None, 'Вход через Telegram доступен только ученикам.'
         return user, None
 
 

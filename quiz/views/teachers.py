@@ -25,7 +25,7 @@ class QuizCreateView(CreateView):
         quiz.owner = self.request.user
         quiz.save()
         messages.success(
-            self.request, 'The quiz was created with success! Go ahead and add some questions now.')
+            self.request, 'Тест создан. Теперь добавьте вопросы.')
         return redirect('quiz:question_add', quiz.pk)
 
 
@@ -76,7 +76,7 @@ class QuizDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         quiz = self.get_object()
         messages.success(
-            request, 'The quiz %s was deleted with success!' % quiz.name)
+            request, 'Тест "%s" успешно удален.' % quiz.name)
         return super().delete(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -98,7 +98,7 @@ class QuestionDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         question = self.get_object()
         messages.success(
-            request, 'The question %s was deleted with success!' % question.text)
+            request, 'Вопрос "%s" успешно удален.' % question.text)
         return super().delete(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -146,7 +146,7 @@ def question_add(request, pk):
             question.quiz = quiz
             question.save()
             messages.success(
-                request, 'You may now add answers/options to the question.')
+                request, 'Теперь добавьте варианты ответов к вопросу.')
             return redirect('quiz:question_update', quiz.pk, question.pk)
             # quiz.pk, question.pk
     else:
@@ -181,7 +181,7 @@ def question_update(request, quiz_pk, question_pk):
                 form.save()
                 formset.save()
             messages.success(
-                request, 'Question and answers saved with success!')
+                request, 'Вопрос и ответы успешно сохранены.')
             return redirect('quiz:quiz_update', quiz.pk)
     else:
         form = QuestionForm(instance=question)

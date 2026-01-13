@@ -22,7 +22,7 @@ def deck_create(request):
 
         deck = Deck(student=student, category=category, color=color)
         deck.save()
-        messages.success(request, "Deck created!")
+        messages.success(request, "Колода создана.")
         return redirect('words:deck_list')
 
     return render(request, 'words/deck_add.html')
@@ -69,7 +69,7 @@ class CardCreateView(CreateView):
         practice = Practice(card=card)
         practice.save()
 
-        messages.success(self.request, "Card created!")
+        messages.success(self.request, "Карточка создана.")
         return redirect('words:card_list', deck_id)
 
 
@@ -84,7 +84,7 @@ class DeckUpdateView(UpdateView):
         return self.request.user.student.decks.all()
 
     def get_success_url(self):
-        messages.success(self.request, "Deck updated!")
+        messages.success(self.request, "Колода обновлена.")
         return reverse('words:deck_update', kwargs={'pk': self.object.pk})
 
 
@@ -100,7 +100,7 @@ class CardUpdateView(UpdateView):
         return queryset
 
     def get_success_url(self):
-        messages.success(self.request, "Card updated!")
+        messages.success(self.request, "Карточка обновлена.")
         return reverse('words:card_update', kwargs={'pk': self.object.pk})
 
 
@@ -114,7 +114,7 @@ class CardDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         card = self.get_object()
         messages.success(
-            request, 'The card %s was deleted with success!' % card.word)
+            request, 'Карточка "%s" успешно удалена.' % card.word)
         return super().delete(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -122,7 +122,7 @@ class CardDeleteView(DeleteView):
         return queryset
 
     def get_success_url(self):
-        messages.error(self.request, "Card deleted.")
+        messages.error(self.request, "Карточка удалена.")
         return reverse('words:deck_list')
 
 
@@ -136,7 +136,7 @@ class DeckDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         deck = self.get_object()
         messages.success(
-            request, 'The deck %s was deleted with success!' % deck.category)
+            request, 'Колода "%s" успешно удалена.' % deck.category)
         return super().delete(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -144,7 +144,7 @@ class DeckDeleteView(DeleteView):
         return queryset
 
     def get_success_url(self):
-        messages.error(self.request, "Deck deleted.")
+        messages.error(self.request, "Колода удалена.")
         return reverse('words:deck_list')
 
 

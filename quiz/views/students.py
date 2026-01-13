@@ -103,10 +103,10 @@ def take_quiz(request, pk):
                         student=student).aggregate(Sum('score'))['score__sum']
                     student.save()
                     if percentage < 50.0:
-                        messages.warning(request, 'Better luck next time! Your score for the quiz %s was %s.' % (
+                        messages.warning(request, 'В следующий раз получится лучше! Ваш результат в тесте "%s" — %s.' % (
                             quiz.name, percentage))
                     else:
-                        messages.success(request, 'Congratulations! You completed the quiz %s with success! You scored %s points.' % (
+                        messages.success(request, 'Поздравляем! Вы успешно прошли тест "%s". Ваш результат — %s.' % (
                             quiz.name, percentage))
                     return redirect('quiz:quiz_list_student')
     else:

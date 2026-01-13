@@ -30,7 +30,7 @@
 
     </div>
     <div class="col l4 m12 s12 center  ">
-        <h3 class="white-text">Sign up as a Teacher</h3>
+        <h3 class="white-text">Регистрация преподавателя</h3>
         <form method="post" novalidate class=" my-2 card-panel ">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}">
@@ -39,24 +39,24 @@
             <div class="input-field col s12">
                 <i class="material-icons prefix">account_circle</i>
                 {{ form.username }}
-                <label for={{ form.username.id_for_label }}>Username</label>
+                <label for={{ form.username.id_for_label }}>Имя пользователя</label>
             </div>
 
             {{ form.password1.errors }}
             <div class="input-field col s12">
                 <i class="material-icons prefix">lock</i>
                 {{ form.password1 }}
-                <label for={{ form.password1.id_for_label }}>Password</label>
+                <label for={{ form.password1.id_for_label }}>Пароль</label>
             </div>
 
             {{ form.password2.errors }}
             <div class="input-field col s12">
                 <i class="material-icons prefix">lock</i>
                 {{ form.password2 }}
-                <label for={{ form.password2.id_for_label }}>Password Confirmation</label>
+                <label for={{ form.password2.id_for_label }}>Подтверждение пароля</label>
             </div>
 
-            <button type="submit" class="btn">Sign up</button>
+            <button type="submit" class="btn">Зарегистрироваться</button>
         </form>
     </div>
 </div>

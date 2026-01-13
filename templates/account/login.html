@@ -18,27 +18,27 @@
 
 <div class="row " style="overflow-x: hidden ; margin-bottom: 0">
     <div class="col m8 s12 hide-on-med-and-down ">
-        <img src="{% static 'images/confirm.svg' %}" alt="svg image 'confirm' from Undraw">
+        <img src="{% static 'images/confirm.svg' %}" alt="svg изображение 'подтверждение' из Undraw">
 
     </div>
 
     <div class="col l4 m12 s12 center  ">
-        <h3 class="white-text">Sign in</h3>
+        <h3 class="white-text">Войти</h3>
         <form class=" my-2 card-panel " method="POST" novalidate>
             {% csrf_token %}
 
             <div class="input-field">
                 <i class="material-icons prefix">account_circle</i>
                 <input name="username" type="text" autofocus>
-                <label for="username">Login</label>
+                <label for="username">Логин</label>
             </div>
             <div class="input-field">
                 <i class="material-icons prefix">lock</i>
                 <input name="password" type="password">
-                <label for="password">Password</label>
+                <label for="password">Пароль</label>
             </div>
 
-            <button class="btn waves-effect waves-light" type="submit">Submit
+            <button class="btn waves-effect waves-light" type="submit">Войти
                 <i class="material-icons right">send</i>
             </button>
 

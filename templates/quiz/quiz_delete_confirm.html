@@ -4,14 +4,14 @@
 
 {% block content %}
 
-<h2 class="mb-3">Confirm deletion</h2>
+<h2 class="mb-3">Подтверждение удаления</h2>
 <p class="flow-tex">
-    Are you sure you want to delete the question <strong>"{{ question.text }}"</strong>? There is no
-    going back.
+    Вы уверены, что хотите удалить вопрос <strong>"{{ question.text }}"</strong>? Отменить действие будет
+    невозможно.
 </p>
 <form method="post">
     {% csrf_token %}
-    <button type="submit" class="btn btn-red ">Yes, I'm sure</button>
-    <a href="#" class="btn " role="button">Nevermind</a>
+    <button type="submit" class="btn btn-red ">Да, удалить</button>
+    <a href="#" class="btn " role="button">Отмена</a>
 </form>
 {% endblock %}

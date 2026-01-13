@@ -1,11 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Hangman Game</title>
+    <title>Игра «Виселица»</title>
     <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}" />
     <link rel="stylesheet" href="{% static 'css/hangman.css' %}" />
     <link
@@ -18,8 +18,8 @@
     {% include 'layout/_navbar.html' %}
 
     <div class="bg-primary white-text container">
-      <h3>Hangman Game</h3>
-      <p>Find the hidden word - Enter a letter</p>
+      <h3>Игра «Виселица»</h3>
+      <p>Найдите скрытое слово — введите букву</p>
       <div class="game-container">
         <svg height="250" width="200" class="figure-container">
           <!--  Rod  -->
@@ -47,16 +47,16 @@
       <div class="popup-container">
         <div class="popup card">
           <div class="card-content">
-            <h3 id="final-message">You have Won &#128515;</h3>
+            <h3 id="final-message">Вы победили &#128515;</h3>
             <a href="{% url 'memo:hangman' %}" class="btn" id="play-btn">
               <i class="material-icons">replay</i>
-              Play Again
+              Сыграть снова
             </a>
           </div>
         </div>
       </div>
       <div class="notification center-align">
-        <p>You have already entered this letter</p>
+        <p>Вы уже вводили эту букву</p>
       </div>
     </div>
     {% include 'layout/_footer.html' %}

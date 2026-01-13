@@ -5,20 +5,20 @@
 {% block content %}
 
 
-<h2 class="mb-3">{{ quiz.name }} Results</h2>
+<h2 class="mb-3">{{ quiz.name }} — результаты</h2>
 
 <div class="card">
     <div class="card-header">
-        <strong>Taken Quizzes</strong>
-        <span class="badge badge-pill badge-primary float-right">Average Score:
+        <strong>Пройденные тесты</strong>
+        <span class="badge badge-pill badge-primary float-right">Средний результат:
             {{ quiz_score.average_score|default_if_none:0.0 }}</span>
     </div>
     <table class="table mb-0">
         <thead>
             <tr>
-                <th>Student</th>
-                <th>Date</th>
-                <th>Percentage</th>
+                <th>Ученик</th>
+                <th>Дата</th>
+                <th>Процент</th>
             </tr>
         </thead>
         <tbody>
@@ -32,7 +32,7 @@
         </tbody>
     </table>
     <div class="card-footer text-muted">
-        Total respondents: <strong>{{ total_taken_quizzes }}</strong>
+        Всего участников: <strong>{{ total_taken_quizzes }}</strong>
     </div>
 </div>
 {% endblock %}

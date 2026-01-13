@@ -3,8 +3,8 @@
 <table class="centered striped z-depth-2 white">
   <thead>
     <tr>
-      <th>Quiz</th>
-      <th>Questions</th>
+      <th>Тест</th>
+      <th>Вопросы</th>
       <th></th>
     </tr>
   </thead>
@@ -16,13 +16,13 @@
       <td>
         <a href="{% url 'quiz:take_quiz' quiz.pk %}" role="button" class="btn">
           <i class="material-icons right">send</i>
-          Start quiz
+          Начать тест
         </a>
       </td>
     </tr>
     {% empty %}
     <tr>
-      <td colspan="4">No More Quizzes.</td>
+      <td colspan="4">Больше нет тестов.</td>
     </tr>
     {% endfor %}
   </tbody>

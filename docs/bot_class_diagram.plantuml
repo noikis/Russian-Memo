@@ -1,0 +1,86 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+interface DictionaryClient {
+  +language_code: String
+  +get_definition(word: String): Definition
+}
+
+class DictionaryAPIClient {
+  +language_code: String
+  +base_url: String
+  +timeout: int
+  +get_definition(word: String): Definition
+}
+
+interface Cache {
+  +get(key: String): String
+  +set(key: String, value: String, ttl: int): void
+}
+
+class RedisCache {
+  +default_ttl: int
+  +get(key: String): String
+  +set(key: String, value: String, ttl: int): void
+}
+
+class DictionaryService {
+  +client: DictionaryClient
+  +cache: Cache
+  +cache_ttl: int
+  +define(word: String): String
+}
+
+' =========================
+' TRANSLATION
+' =========================
+
+interface TranslationClient {
+  +translate(text: String, target: String, source: String): String
+}
+
+class YandexTranslationClient {
+  +api_key: String
+  +folder_id: String
+  +base_url: String
+  +timeout: int
+  +translate(text: String, target: String, source: String): String
+}
+
+class TranslationService {
+  +client: TranslationClient
+  +cache: Cache
+  +cache_ttl: int
+  +translate(text: String): String
+}
+
+' =========================
+' COMMAND / ENTRY POINT
+' =========================
+class Command {
+  +telegram_bot_token: String
+  +telegram_client: TelegramClient
+  +translationService: TranslationService
+  +dictionaryService: DictionaryService
+  +handle(): void
+  +define(): void
+  +translate(): void
+  +help(): void
+}
+
+' =========================
+' RELATIONSHIPS
+' =========================
+Command --> DictionaryService : uses
+DictionaryService --> DictionaryAPIClient : uses
+DictionaryAPIClient ..|> DictionaryClient : implements
+
+Command --> TranslationService : uses
+TranslationService --> YandexTranslationClient : uses
+YandexTranslationClient ..|> TranslationClient : implements
+
+DictionaryService --> Cache : uses
+TranslationService --> Cache : uses
+RedisCache ..|> Cache : implements
+
+@enduml
