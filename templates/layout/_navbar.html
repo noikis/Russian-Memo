@@ -58,12 +58,12 @@
         {% else %}
           <li>
             <a href="{% url 'account:student_registration' %}"
-              >Регистрация ученика</a
+              >Я ученик</a
             >
           </li>
           <li>
             <a href="{% url 'account:teacher_registration' %}"
-              >Регистрация преподавателя</a
+              >Я преподаватель</a
             >
           </li>
           <li><a href="{% url 'account:login' %}">Войти</a></li>
@@ -147,12 +147,12 @@
     {% else %}
       <li>
         <a href="{% url 'account:student_registration' %}" class="black-text sidenav-close nav-link-icon">
-          <i class="material-icons black-text">event_seat</i>Регистрация ученика
+          <i class="material-icons black-text">school</i>Я ученик
         </a>
       </li>
       <li>
         <a href="{% url 'account:teacher_registration' %}" class="black-text sidenav-close nav-link-icon">
-          <i class="material-icons black-text">school</i>Регистрация преподавателя
+          <i class="material-icons black-text">menu_book</i>Я преподаватель
         </a>
       </li>
       <li>

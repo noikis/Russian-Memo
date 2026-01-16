@@ -160,10 +160,22 @@ def _validate_webapp_init_data(init_data_raw: str):
         return False, f'Подпись Telegram не прошла проверку ({exc}).'
 
 
+def _get_telegram_field(user_data, key, default=None):
+    if isinstance(user_data, dict):
+        return user_data.get(key, default)
+    return getattr(user_data, key, default)
+
+
 def _get_or_create_student_from_telegram(user_data):
+    telegram_id = _get_telegram_field(user_data, 'id')
+    try:
+        telegram_id = int(telegram_id)
+    except (TypeError, ValueError):
+        return None, 'Некорректный идентификатор Telegram.'
+
     student = (
         Student.objects.select_related('user')
-        .filter(telegram_id=user_data.id)
+        .filter(telegram_id=telegram_id)
         .first()
     )
     if student:
@@ -174,14 +186,15 @@ def _get_or_create_student_from_telegram(user_data):
 
 
     user = User(
-        username=user_data.username or f'tg_user_{user_data.id}',
-        first_name=user_data.first_name or '',
-        last_name=user_data.last_name or '',
+        username=_get_telegram_field(user_data, 'username')
+        or f'tg_user_{telegram_id}',
+        first_name=_get_telegram_field(user_data, 'first_name') or '',
+        last_name=_get_telegram_field(user_data, 'last_name') or '',
         is_student=True,
     )
     user.set_unusable_password()
     user.save()
-    Student.objects.create(user=user, telegram_id=telegram_id_int)
+    Student.objects.create(user=user, telegram_id=telegram_id)
     return user, None
 
 

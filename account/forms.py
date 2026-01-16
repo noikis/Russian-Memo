@@ -10,6 +10,7 @@ from .models import User, Student
 class TeacherSignUpForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
+        
 
     def save(self, commit=True):
         user = super().save(commit=False)

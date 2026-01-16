@@ -7,12 +7,13 @@
 
 <h2 class="mb-3">{{ quiz.name }} — результаты</h2>
 
+{% if taken_quizzes|length == 0 %}
+    <p>Пока что никто не проходил этот тест.</p>
+{% else %}
+<h4> <span >Средний результат: {{  80 |default_if_none:0 }} %</span></h4>
+{% endif %}
+
 <div class="card">
-    <div class="card-header">
-        <strong>Пройденные тесты</strong>
-        <span class="badge badge-pill badge-primary float-right">Средний результат:
-            {{ quiz_score.average_score|default_if_none:0.0 }}</span>
-    </div>
     <table class="table mb-0">
         <thead>
             <tr>
@@ -31,8 +32,8 @@
             {% endfor %}
         </tbody>
     </table>
-    <div class="card-footer text-muted">
-        Всего участников: <strong>{{ total_taken_quizzes }}</strong>
+    <div class="card-content">
+        <p>Всего участников: <strong>{{ total_taken_quizzes }}</strong></p>
     </div>
 </div>
 {% endblock %}

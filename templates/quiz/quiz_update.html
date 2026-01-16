@@ -23,14 +23,22 @@
     </a>
 </div>
 
-<ul class="collapsible">
+      <ul class="collection with-header">
+        <li class="collection-header"><h5>Вопросы</h5></li>
     {% for question in questions %}
-    <li>
-        <a href="{% url 'quiz:question_update' quiz.pk question.pk %}" class="collapsible-header">
-            <i class="material-icons">filter_drama</i>{{ question.text }}
-        </a>
-    </li>
+        <li class="collection-item">
+         <div>
+            <a href="{% url 'quiz:question_update' quiz.pk question.pk %}" class="">
+            {{ question.text }}
+            </a>
+            <!-- TODO: fix delete link -->
+            <a href="#!" class="secondary-content"><i class="material-icons">delete</i></a>
+            </div>
+        </li> 
+       
+
     {% endfor %}
-</ul>
+    </ul>
+
 </div>
 {% endblock %}
