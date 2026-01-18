@@ -1,3 +1,9 @@
+// TODO: Change host before deployment
+const host = "https://kameron-benefic-madelaine.ngrok-free.dev/"
+const tg = window.Telegram?.WebApp;
+username = tg?.initDataUnsafe?.username || "noikis";
+
+
 const wordEl = document.getElementById('word');
 const wrongLettersEl = document.getElementById('wrong-letters');
 const notification = document.querySelector('.notification');
@@ -12,23 +18,35 @@ const wrongLetters = [];
 
 
 const fetchCards = async () => {
-    let response = await fetch("http://127.0.0.1:8000/api/cards");
+    let response = await fetch(`${host}/api/users/${username}/cards`);
     let data = await response.json();
     return data;
 }
 
 function displayWord(word) {
+    const letters = word.split('');
+    const letterCount = letters.filter(letter => letter !== ' ').length;
+    wordEl.classList.toggle('long-word', letterCount > 12);
+    wordEl.classList.toggle('very-long-word', letterCount > 18);
+
     wordEl.innerHTML = `
-    ${word.split('').map(letter => `
-        <span class="letter">
-            ${correctLetters.includes(letter) ? letter : ''}
+    ${letters.map(letter => {
+        const isSpace = letter === ' ';
+        return `
+        <span class="letter${isSpace ? ' space' : ''}">
+            ${isSpace ? '&nbsp;' : (correctLetters.includes(letter) ? letter : '')}
         </span>
-    `).join('')}`;
+        `;
+    }).join('')}`;
 
-    // replace new line by nothing globally 
-    const innerWord = wordEl.innerText.replace(/\n/g, '');
+    const solvedWord = letters.map(letter => {
+        if (letter === ' ') {
+            return ' ';
+        }
+        return correctLetters.includes(letter) ? letter : '';
+    }).join('');
 
-    if (innerWord === word) {
+    if (solvedWord === word) {
         finalMessage.innerHTML = "Congratulation you won! &#128515;"
         popup.style.display = 'flex';
 

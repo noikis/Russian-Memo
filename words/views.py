@@ -148,12 +148,10 @@ class DeckDeleteView(DeleteView):
         return reverse('words:deck_list')
 
 
-def cards(request):
-    queryset = Card.objects.all()
+@login_required
+def cards(request, username):
+    queryset = Card.objects.filter(deck__student__user__username=username)
     queryset = serialize('json', queryset)
     return HttpResponse(queryset, content_type="application/json")
 
 
-@login_required
-def fetch_cards(request):
-    return render(request, 'games/fetch_test.html')

@@ -17,6 +17,8 @@
   stroke-width: 4px;
   fill: transparent;
   stroke-linecap: round;
+  width: min(60vw, 200px);
+  height: auto;
 }
 
 .figure-part {
@@ -27,7 +29,11 @@
   padding: 20px 30px;
   position: relative;
   margin: auto;
-  height: 70vh;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
 }
 
 .wrong-letters-container {
@@ -48,22 +54,36 @@
 }
 
 .word {
-  position: absolute;
   display: flex;
-  bottom: 5%;
-  left: 50%;
-  transform: translateX(-50%);
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: auto;
+  max-width: min(90vw, 700px);
+  padding: 0 8px 10px;
+  --letter-size: clamp(18px, 5.5vw, 30px);
 }
 
 .letter {
   border-bottom: 3px solid var(--secondary);
   display: inline-flex;
-  font-size: 30px;
+  font-size: var(--letter-size);
   align-items: center;
   justify-content: center;
-  margin: 0 3px;
-  height: 50px;
-  width: 30px;
+  margin: 0;
+  height: calc(var(--letter-size) * 1.6);
+  width: calc(var(--letter-size) * 1.2);
+}
+.letter.space {
+  border-bottom: 0;
+}
+.word.long-word {
+  --letter-size: clamp(16px, 5vw, 26px);
+  gap: 4px;
+}
+.word.very-long-word {
+  --letter-size: clamp(14px, 4.5vw, 22px);
+  gap: 3px;
 }
 
 .popup-container {
@@ -102,4 +122,33 @@
 .notification.show {
   display: block;
   transform: translateY(-50px);
+}
+
+@media (max-width: 600px) {
+  .game-container {
+    padding: 12px 12px 24px;
+    min-height: 60vh;
+  }
+
+  .wrong-letters-container {
+    top: 10px;
+    right: 10px;
+  }
+
+  .wrong-letters-container span {
+    font-size: 18px;
+  }
+
+  .figure-container {
+    width: min(70vw, 200px);
+  }
+
+  .notification {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .notification.show {
+    transform: translate(-50%, -50px);
+  }
 }

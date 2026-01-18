@@ -7,8 +7,8 @@ def validate_0_5(value):
         raise ValidationError
 
 
-RATINGS = ((0, 'Blanked'), (1, 'Barely Know It'), (2, 'Needs Work'),
-           (3, 'Remembered'), (4, 'Solid'))
+RATINGS = ((0, 'Забыл'), (1, 'Еле помню'), (2, 'Нужна работа'),
+           (3, 'Вспомнил'), (4, 'Знаю'),)
 
 
 class RatingsForm(forms.Form):

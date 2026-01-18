@@ -18,10 +18,6 @@
           return;
         }
 
-        tg.ready();
-        console.log("initData:", tg.initData);
-        console.log("initDataUnsafe:", tg.initDataUnsafe);
-
         if (window.__tgAuthInFlight) return;
         window.__tgAuthInFlight = true;
 
