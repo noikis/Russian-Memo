@@ -3,10 +3,35 @@ from account.models import Student
 
 
 class Deck(models.Model):
-    category = models.CharField(max_length=100, default="New Deck")
-    color = models.CharField(default="#00bcd4", max_length=30)
+    category = models.CharField(
+        max_length=100,
+        default="New Deck",
+        verbose_name="Название",
+    )
+    color = models.CharField(
+        default="#00bcd4",
+        max_length=30,
+        verbose_name="Цвет",
+    )
     student = models.ForeignKey(
-        Student, on_delete=models.CASCADE, related_name='decks')
+        Student,
+        on_delete=models.CASCADE,
+        related_name='decks',
+        verbose_name="Студент",
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата создания",
+    )
+    deleted_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Дата удаления",
+    )
+
+    class Meta:
+        verbose_name = "Колода"
+        verbose_name_plural = "Колоды"
 
     def __str__(self):
         return self.category
