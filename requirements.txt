@@ -8,9 +8,9 @@ django-material-admin==1.6.36
 django-materialize-form==0.1.1
 django-materializecss-form==1.1.16
 isort==4.3.21
+init_data_py==0.2.7
 lazy-object-proxy==1.4.3
 mccabe==0.6.1
-pillow==12.0.0
 pycodestyle==2.5.0
 pylint==2.4.4
 pytz==2019.3
