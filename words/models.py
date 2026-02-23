@@ -1,49 +1,33 @@
 from django.db import models
-from account.models import Student
+
+from account.models import User
 
 
 class Deck(models.Model):
-    category = models.CharField(
-        max_length=100,
-        default="New Deck",
-        verbose_name="Название",
-    )
-    color = models.CharField(
-        default="#00bcd4",
-        max_length=30,
-        verbose_name="Цвет",
-    )
-    student = models.ForeignKey(
-        Student,
-        on_delete=models.CASCADE,
-        related_name='decks',
-        verbose_name="Студент",
-    )
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="Дата создания",
-    )
-    deleted_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        verbose_name="Дата удаления",
-    )
+    title = models.CharField(max_length=100)
+    color = models.CharField(max_length=255)
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="decks")
+    created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        verbose_name = "Колода"
-        verbose_name_plural = "Колоды"
+        db_table = "decks"
 
     def __str__(self):
-        return self.category
+        return self.title
 
 
 class Card(models.Model):
-    deck = models.ForeignKey(
-        Deck, on_delete=models.CASCADE, related_name='cards')
-    word = models.CharField(max_length=100, blank=False, null=False)
-    explanation = models.TextField(max_length=500, blank=True)
-    translation = models.CharField(max_length=55, blank=True)
-    synonymes = models.TextField(max_length=255, blank=True)
+    word = models.CharField(max_length=255)
+    explanation = models.TextField(null=True, blank=True)
+    translation = models.TextField(null=True, blank=True)
+    synonymes = models.TextField(null=True, blank=True)
+    deck = models.ForeignKey(Deck, on_delete=models.CASCADE, related_name="cards")
+    created_at = models.DateTimeField(auto_now_add=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "cards"
 
     def __str__(self):
         return self.word
