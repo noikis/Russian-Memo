@@ -8,7 +8,6 @@ from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 
 
 from .models import Card, Deck
-from memorisation.models import Practice
 from account.decorators import teacher_required, student_required
 
 
@@ -16,11 +15,11 @@ from account.decorators import teacher_required, student_required
 @student_required
 def deck_create(request):
     if request.method == "POST":
-        category = request.POST['category']
+        title = request.POST['title']
         color = request.POST['color']
         student = request.user
 
-        deck = Deck(student=student, category=category, color=color)
+        deck = Deck(student=student, title=title, color=color)
         deck.save()
         messages.success(request, "Колода создана.")
         return redirect('words:deck_list')
@@ -66,9 +65,6 @@ class CardCreateView(CreateView):
         card.deck = Deck.objects.get(pk=deck_id)
         card.save()
 
-        practice = Practice(card=card)
-        practice.save()
-
         messages.success(self.request, "Карточка создана.")
         return redirect('words:card_list', deck_id)
 
@@ -76,7 +72,7 @@ class CardCreateView(CreateView):
 @method_decorator([login_required, student_required], name='dispatch')
 class DeckUpdateView(UpdateView):
     model = Deck
-    fields = ('category', 'color', )
+    fields = ('title', 'color', )
     context_object_name = 'deck'
     template_name = 'words/deck_update.html'
 
@@ -136,7 +132,7 @@ class DeckDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         deck = self.get_object()
         messages.success(
-            request, 'Колода "%s" успешно удалена.' % deck.category)
+            request, 'Колода "%s" успешно удалена.' % deck.title)
         return super().delete(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -153,5 +149,4 @@ def cards(request, username):
     queryset = Card.objects.filter(deck__student__user__username=username)
     queryset = serialize('json', queryset)
     return HttpResponse(queryset, content_type="application/json")
-
 

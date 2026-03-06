@@ -1,12 +1,9 @@
 from django.contrib import admin
-from django.contrib.auth.models import Group
-from material.admin.sites import site
 
-from .models import User, Student
+from .models import ExternalIdentity, Role, User, UserRole
 
 
 admin.site.register(User)
-admin.site.register(Student)
-
-
-# site.unregister(Group)
+admin.site.register(Role)
+admin.site.register(UserRole)
+admin.site.register(ExternalIdentity)

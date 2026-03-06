@@ -1,15 +1,14 @@
-from django import forms
-from django.shortcuts import render, redirect, reverse, get_object_or_404
-from django.urls import reverse_lazy
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, UpdateView, View
+from django.views.generic import ListView, View
 from django.db import transaction
-from django.db.models import Count, Sum
+from django.db.models import Count
+from django.utils import timezone
 
 
-from ..models import Quiz, Question, Answer, TakenQuiz
+from ..models import Quiz, Question, QuizAttempt, SelectedAnswer
 from ..forms import TakeQuizForm
 from account.decorators import student_required
 
@@ -23,7 +22,9 @@ class QuizListView(ListView):
 
     def get_queryset(self):
         student = self.request.user
-        taken_quizzes = student.quizzes.values_list('pk', flat=True)
+        taken_quizzes = QuizAttempt.objects.filter(
+            student=student, finished_at__isnull=False
+        ).values_list('quiz_id', flat=True)
         queryset = Quiz.objects.exclude(pk__in=taken_quizzes) \
             .annotate(questions_count=Count('questions')) \
             .filter(questions_count__gt=0)
@@ -31,15 +32,16 @@ class QuizListView(ListView):
 
 
 @method_decorator([login_required, student_required], name='dispatch')
-class TakenQuizListView(ListView):
-    model = TakenQuiz
+class QuizAttemptListView(ListView):
+    model = QuizAttempt
     context_object_name = 'taken_quizzes'
     template_name = 'quiz/students/taken_quiz.html'
 
     def get_queryset(self):
-        queryset = self.request.user.taken_quizzes \
-            .order_by('date')
-        return queryset
+        return QuizAttempt.objects.filter(
+            student=self.request.user,
+            finished_at__isnull=False,
+        ).order_by('-finished_at', '-started_at')
 
 
 @method_decorator([login_required, student_required], name='dispatch')
@@ -48,10 +50,11 @@ class QuizResultsView(View):
 
     def get(self, request, *args, **kwargs):
         quiz = Quiz.objects.get(id=kwargs['pk'])
-        taken_quiz = TakenQuiz.objects.filter(
-            student=request.user, quiz=quiz)
+        attempt = QuizAttempt.objects.filter(
+            student=request.user, quiz=quiz, finished_at__isnull=False
+        ).order_by('-finished_at', '-started_at').first()
 
-        if not taken_quiz:
+        if not attempt:
             """
             Don't show the result if the user didn't attempted the quiz
             """
@@ -62,7 +65,7 @@ class QuizResultsView(View):
         context = {
             'questions': questions,
             'quiz': quiz,
-            'percentage': taken_quiz[0].percentage
+            'percentage': attempt.percentage
         }
         return render(request, self.template_name, context)
 
@@ -73,12 +76,57 @@ def take_quiz(request, pk):
     quiz = get_object_or_404(Quiz, pk=pk)
     student = request.user
 
-    if student.quizzes.filter(pk=pk).exists():
-        return render(request, 'students/taken_quiz.html')
+    if QuizAttempt.objects.filter(student=student, quiz=quiz, finished_at__isnull=False).exists():
+        return redirect('quiz:taken_quiz')
 
     total_questions = quiz.questions.count()
-    unanswered_questions = student.get_unanswered_questions(quiz)
+    if total_questions == 0:
+        messages.warning(request, 'В этом тесте нет вопросов.')
+        return redirect('quiz:quiz_list_student')
+
+    attempt = (
+        QuizAttempt.objects.filter(student=student, quiz=quiz, finished_at__isnull=True)
+        .order_by('-started_at')
+        .first()
+    )
+    if attempt is None:
+        attempt = QuizAttempt.objects.create(
+            student=student,
+            quiz=quiz,
+            score=0,
+            percentage=0,
+        )
+
+    answered_question_ids = attempt.selected_answers.filter(
+        selected_answer__isnull=False
+    ).values_list('selected_answer__question_id', flat=True)
+    unanswered_questions = quiz.questions.exclude(
+        id__in=answered_question_ids
+    ).order_by('position', 'id')
     total_unanswered_questions = unanswered_questions.count()
+    if total_unanswered_questions == 0:
+        correct_answers = attempt.selected_answers.filter(
+            selected_answer__is_correct=True
+        ).count()
+        percentage = round((correct_answers / total_questions) * 100.0, 2)
+        attempt.score = correct_answers
+        attempt.percentage = percentage
+        attempt.finished_at = timezone.now()
+        attempt.save()
+        if percentage < 50.0:
+            messages.warning(
+                request,
+                'В следующий раз получится лучше! Ваш результат в тесте "%s" — %s.' % (
+                    quiz.name, percentage)
+            )
+        else:
+            messages.success(
+                request,
+                'Поздравляем! Вы успешно прошли тест "%s". Ваш результат — %s.' % (
+                    quiz.name, percentage)
+            )
+        return redirect('quiz:quiz_list_student')
+
     progress = 100 - \
         round(((total_unanswered_questions - 1) / total_questions) * 100)
     question = unanswered_questions.first()
@@ -87,21 +135,33 @@ def take_quiz(request, pk):
         form = TakeQuizForm(question=question, data=request.POST)
         if form.is_valid():
             with transaction.atomic():
-                student_answer = form.save(commit=False)
-                student_answer.student = student
-                student_answer.save()
-                if student.get_unanswered_questions(quiz).exists():
+                selected_answer = form.cleaned_data['answer']
+                already_answered = attempt.selected_answers.filter(
+                    selected_answer__question=question
+                ).exists()
+                if not already_answered:
+                    SelectedAnswer.objects.create(
+                        attempt=attempt,
+                        selected_answer=selected_answer,
+                    )
+
+                remaining = quiz.questions.exclude(
+                    id__in=attempt.selected_answers.filter(
+                        selected_answer__isnull=False
+                    ).values_list('selected_answer__question_id', flat=True)
+                )
+                if remaining.exists():
                     return redirect('quiz:take_quiz', pk)
                 else:
-                    correct_answers = student.quiz_answers.filter(
-                        answer__question__quiz=quiz, answer__is_correct=True).count()
+                    correct_answers = attempt.selected_answers.filter(
+                        selected_answer__is_correct=True
+                    ).count()
                     percentage = round(
                         (correct_answers / total_questions) * 100.0, 2)
-                    TakenQuiz.objects.create(
-                        student=student, quiz=quiz, score=correct_answers, percentage=percentage)
-                    student.score = TakenQuiz.objects.filter(
-                        student=student).aggregate(Sum('score'))['score__sum']
-                    student.save()
+                    attempt.score = correct_answers
+                    attempt.percentage = percentage
+                    attempt.finished_at = timezone.now()
+                    attempt.save()
                     if percentage < 50.0:
                         messages.warning(request, 'В следующий раз получится лучше! Ваш результат в тесте "%s" — %s.' % (
                             quiz.name, percentage))

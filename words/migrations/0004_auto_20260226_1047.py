@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
         ),
         migrations.RemoveField(
             model_name='deck',
-            name='category',
+            name='title',
         ),
         migrations.AddField(
             model_name='card',

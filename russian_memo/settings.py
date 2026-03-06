@@ -210,15 +210,19 @@ MATERIAL_ADMIN_SITE = {
     },
     'MODEL_ICONS': {
         # Set icons for models(lowercase), including 3rd party models, {'model_name': 'material_icon_name',
-        'student': 'school',
+        'user': 'person',
+        'role': 'verified_user',
+        'userrole': 'groups',
+        'externalidentity': 'fingerprint',
         'deck': 'bookmarks',
         'card': 'bookmark',
-        'level': 'present_to_all',
         'question': 'not_listed_location',
         'answer': 'format_list_numbered',
         'quiz': 'list_alt',
-        'takenquiz': 'done_all',
-        'practice': 'update',
+        'quizattempt': 'done_all',
+        'selectedanswer': 'check_circle',
+        'cardpractice': 'update',
+        'cardreview': 'history',
 
     }
 }

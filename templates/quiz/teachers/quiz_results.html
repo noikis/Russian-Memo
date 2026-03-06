@@ -10,7 +10,7 @@
 {% if taken_quizzes|length == 0 %}
     <p>Пока что никто не проходил этот тест.</p>
 {% else %}
-<h4> <span >Средний результат: {{  80 |default_if_none:0 }} %</span></h4>
+<h4> <span >Средний результат: {{ quiz_score.average_score|default_if_none:0 }} %</span></h4>
 {% endif %}
 
 <div class="card">
@@ -25,8 +25,8 @@
         <tbody>
             {% for taken_quiz in taken_quizzes %}
             <tr>
-                <td>{{ taken_quiz.student.user.username }}</td>
-                <td>{{ taken_quiz.date|naturaltime }}</td>
+                <td>{{ taken_quiz.student.username }}</td>
+                <td>{{ taken_quiz.finished_at|naturaltime }}</td>
                 <td>{{ taken_quiz.percentage }}</td>
             </tr>
             {% endfor %}

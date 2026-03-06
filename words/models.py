@@ -1,4 +1,9 @@
+from datetime import date
+
+from django.apps import apps
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from account.models import User
 
@@ -31,3 +36,22 @@ class Card(models.Model):
 
     def __str__(self):
         return self.word
+
+
+@receiver(post_save, sender=Card)
+def create_initial_practice(sender, instance, created, **kwargs):
+    if not created:
+        return
+
+    Practice = apps.get_model("memorisation", "Practice")
+    Practice.objects.get_or_create(
+        card=instance,
+        defaults={
+            "state": "new",
+            "due": date.today(),
+            "interval": 0,
+            "ease_factor": 2,
+            "reps": 0,
+            "lapses": 0,
+        },
+    )

@@ -75,12 +75,3 @@ class SelectedAnswer(models.Model):
     class Meta:
         db_table = "selected_answers"
 
-
-class TakenQuiz(QuizAttempt):
-    class Meta:
-        proxy = True
-
-
-class StudentAnswer(SelectedAnswer):
-    class Meta:
-        proxy = True

@@ -57,7 +57,7 @@
         {% else %}
         <p class="flow-text">
           Сегодня нет карточек для практики. <br />
-          Следующая практика {{ next_practice|naturalday }}.
+          Следующая практика {{ next_due|default:next_practice|naturalday }}.
         </p>
         {% endif %}
       </div>

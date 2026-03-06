@@ -36,7 +36,6 @@
           <li>
             <a href="{% url 'memo:flashcards' %}">
               Карточки
-              <span class="badge bg-secondary text-white">{% to_practice request.user %}</span>
             </a>
           </li>
           <li>
@@ -115,7 +114,6 @@
         <a href="{% url 'memo:flashcards' %}" class="black-text sidenav-close nav-link-icon">
           <i class="material-icons black-text">style</i>
           Карточки
-          <span class="badge bg-secondary white-text">{% to_practice request.user %}</span>
         </a>
       </li>
       {% endif %}

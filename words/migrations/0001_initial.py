@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='Deck',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('category', models.CharField(default='New Deck', max_length=100)),
+                ('title', models.CharField(default='New Deck', max_length=100)),
                 ('color', models.CharField(default='#00bcd4', max_length=30)),
                 ('student', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='students', to='account.Student')),
             ],
