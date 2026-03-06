@@ -13,8 +13,8 @@ class CardPractice(models.Model):
     ease_factor = models.IntegerField()
     reps = models.IntegerField()
     lapses = models.IntegerField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         db_table = "card_practice"

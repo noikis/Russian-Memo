@@ -6,8 +6,8 @@ from account.models import User
 class Quiz(models.Model):
     name = models.CharField(max_length=255)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="quizzes")
-    created_at = models.DateTimeField(auto_now_add=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     class Meta:
         db_table = "quizzes"
@@ -19,9 +19,16 @@ class Quiz(models.Model):
 
 class Question(models.Model):
     text = models.TextField()
-    position = models.IntegerField()
+    position = models.IntegerField(default=1)
     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
     deleted_at = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and self.quiz_id is not None:
+            self.position = (
+                Question.objects.filter(quiz_id=self.quiz_id).count() + 1
+            )
+        super().save(*args, **kwargs)
 
     class Meta:
         db_table = "questions"

@@ -18,7 +18,7 @@ def deck_create(request):
     if request.method == "POST":
         category = request.POST['category']
         color = request.POST['color']
-        student = request.user.student
+        student = request.user
 
         deck = Deck(student=student, category=category, color=color)
         deck.save()
@@ -34,7 +34,7 @@ class DeckListView(ListView):
     template_name = 'words/deck_list.html'
 
     def get_queryset(self):
-        queryset = Deck.objects.filter(student=self.request.user.student)
+        queryset = Deck.objects.filter(student=self.request.user)
         return queryset
 
 
@@ -81,7 +81,7 @@ class DeckUpdateView(UpdateView):
     template_name = 'words/deck_update.html'
 
     def get_queryset(self):
-        return self.request.user.student.decks.all()
+        return self.request.user.decks.all()
 
     def get_success_url(self):
         messages.success(self.request, "Колода обновлена.")

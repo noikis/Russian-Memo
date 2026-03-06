@@ -15,7 +15,7 @@ def field_type(field):
 @register.simple_tag
 def marked_answer(user, opt):
     studentanswer = StudentAnswer.objects.filter(
-        student=user.student, answer=opt)
+        student=user, answer=opt)
     if studentanswer:
         if opt.is_correct:
             return 'correct'

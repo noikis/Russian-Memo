@@ -13,6 +13,12 @@ class User(AbstractUser):
     class Meta:
         db_table = "users"
 
+    def is_teacher(self):
+        return self.roles.filter(name="teacher").exists()
+    
+    def is_student(self):
+        return self.roles.filter(name="student").exists()
+
 
 class Role(models.Model):
     name = models.CharField(max_length=255, unique=True)
@@ -42,9 +48,9 @@ class ExternalIdentity(models.Model):
     last_name = models.CharField(max_length=150, null=True, blank=True)
     photo_url = models.TextField(null=True, blank=True)
     auth_date = models.BigIntegerField(null=True, blank=True)
-    last_login_at = models.DateTimeField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    last_login_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
 
     class Meta:
         db_table = "external_identities"

@@ -98,12 +98,35 @@ WSGI_APPLICATION = 'russian_memo.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# When running under docker-compose the postgres service is named
+# `postgres` and exposes its settings via environment variables.  We
+# detect this scenario by seeing `POSTGRES_DB` set, then read the usual
+# vars, falling back to the same sensible defaults the compose file
+# provides.  Without those variables (e.g. a local laptop) we continue
+# using sqlite so development remains effortless.
+if os.environ.get('POSTGRES_DB'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ['POSTGRES_DB'],
+            'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
+            'HOST': os.environ.get('POSTGRES_HOST', 'postgres'),
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+            # Ensure the server/session timezone is UTC to match Django
+            # expectations. This sets the connection option on connect.
+            'OPTIONS': {
+                'options': '-c timezone=UTC'
+            },
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation

@@ -1,22 +1,20 @@
-from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.db import transaction
-from django.forms.utils import ValidationError
 
-from crispy_forms.helper import FormHelper
-from .models import User, Student
+from .models import Role, User
 
 
 class TeacherSignUpForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
-        
 
+    @transaction.atomic
     def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_teacher = True
         if commit:
             user.save()
+            role, _ = Role.objects.get_or_create(name="teacher")
+            user.roles.add(role)
         return user
 
 
@@ -25,14 +23,11 @@ class StudentSignUpForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = User
 
-    # def __init__(self, *args, **kwargs):
-    #     super(StudentSignUpForm, self).__init__(*args, **kwargs)
-    #     self.helper = FormHelper()
-
     @transaction.atomic
-    def save(self):
+    def save(self, commit=True):
         user = super().save(commit=False)
-        user.is_student = True
-        user.save()
-        student = Student.objects.create(user=user)
+        if commit:
+            user.save()
+            role, _ = Role.objects.get_or_create(name="student")
+            user.roles.add(role)
         return user

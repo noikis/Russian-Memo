@@ -14,7 +14,7 @@ from account.decorators import student_required
 @login_required
 def next_practice_item(request):
     student_practice = Practice.objects.filter(
-        card__deck__student=request.user.student).order_by('next_practice')
+        card__deck__student=request.user).order_by('next_practice')
 
     practice = student_practice.filter(
         next_practice__lte=date.today())
