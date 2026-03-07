@@ -8,6 +8,8 @@ from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.contrib import messages, auth
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, UpdateView
 from django.views.decorators.csrf import csrf_exempt
@@ -15,9 +17,11 @@ from django.views import View
 from django.views.generic import TemplateView
 from django.http import JsonResponse, HttpResponseBadRequest
 
-from .models import User, Student
+from .models import ExternalIdentity, Role, User
 from .forms import StudentSignUpForm, TeacherSignUpForm
 from .decorators import student_required, teacher_required
+
+TELEGRAM_PROVIDER = "telegram"
 
 
 class StudentSignUpView(CreateView):
@@ -166,35 +170,89 @@ def _get_telegram_field(user_data, key, default=None):
     return getattr(user_data, key, default)
 
 
-def _get_or_create_student_from_telegram(user_data):
-    telegram_id = _get_telegram_field(user_data, 'id')
+def _parse_int(value):
     try:
-        telegram_id = int(telegram_id)
+        return int(value)
     except (TypeError, ValueError):
+        return None
+
+
+def _update_external_identity(identity, user_data):
+    update_fields = []
+
+    username = _get_telegram_field(user_data, 'username')
+    if username is not None:
+        identity.username = username
+        update_fields.append('username')
+
+    first_name = _get_telegram_field(user_data, 'first_name')
+    if first_name is not None:
+        identity.first_name = first_name
+        update_fields.append('first_name')
+
+    last_name = _get_telegram_field(user_data, 'last_name')
+    if last_name is not None:
+        identity.last_name = last_name
+        update_fields.append('last_name')
+
+    photo_url = _get_telegram_field(user_data, 'photo_url')
+    if photo_url is not None:
+        identity.photo_url = photo_url
+        update_fields.append('photo_url')
+
+    auth_date = _parse_int(_get_telegram_field(user_data, 'auth_date'))
+    if auth_date is not None:
+        identity.auth_date = auth_date
+        update_fields.append('auth_date')
+
+    identity.last_login_at = timezone.now()
+    update_fields.append('last_login_at')
+
+    identity.save(update_fields=update_fields)
+
+
+def _get_or_create_student_from_telegram(user_data):
+    telegram_id = _parse_int(_get_telegram_field(user_data, 'id'))
+    if telegram_id is None:
         return None, 'Некорректный идентификатор Telegram.'
 
-    student = (
-        Student.objects.select_related('user')
-        .filter(telegram_id=telegram_id)
+    identity = (
+        ExternalIdentity.objects.select_related('user')
+        .filter(provider=TELEGRAM_PROVIDER, provider_user_id=telegram_id)
         .first()
     )
-    if student:
-        user = student.user
-        if not user.is_student:
+    if identity:
+        user = identity.user
+        if not user.is_student():
             return None, 'Вход через Telegram доступен только ученикам.'
+        _update_external_identity(identity, user_data)
         return user, None
 
+    with transaction.atomic():
+        user = User(
+            username=_get_telegram_field(user_data, 'username')
+            or f'tg_user_{telegram_id}',
+            first_name=_get_telegram_field(user_data, 'first_name') or '',
+            last_name=_get_telegram_field(user_data, 'last_name') or '',
+        )
+        user.set_unusable_password()
+        user.save()
 
-    user = User(
-        username=_get_telegram_field(user_data, 'username')
-        or f'tg_user_{telegram_id}',
-        first_name=_get_telegram_field(user_data, 'first_name') or '',
-        last_name=_get_telegram_field(user_data, 'last_name') or '',
-        is_student=True,
-    )
-    user.set_unusable_password()
-    user.save()
-    Student.objects.create(user=user, telegram_id=telegram_id)
+        role, _ = Role.objects.get_or_create(name="student")
+        user.roles.add(role)
+
+        identity = ExternalIdentity.objects.create(
+            user=user,
+            provider=TELEGRAM_PROVIDER,
+            provider_user_id=telegram_id,
+            username=_get_telegram_field(user_data, 'username'),
+            first_name=_get_telegram_field(user_data, 'first_name'),
+            last_name=_get_telegram_field(user_data, 'last_name'),
+            photo_url=_get_telegram_field(user_data, 'photo_url'),
+            auth_date=_parse_int(_get_telegram_field(user_data, 'auth_date')),
+            last_login_at=timezone.now(),
+        )
+
     return user, None
 
 
