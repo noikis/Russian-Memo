@@ -2,33 +2,22 @@
 skinparam classAttributeIconSize 0
 
 interface DictionaryClient {
-  +language_code: String
+  +language_code: String 
   +get_definition(word: String): Definition
 }
+
+interface RateLimiter
 
 class DictionaryAPIClient {
   +language_code: String
-  +base_url: String
-  +timeout: int
   +get_definition(word: String): Definition
 }
 
-interface Cache {
-  +get(key: String): String
-  +set(key: String, value: String, ttl: int): void
-}
-
-class RedisCache {
-  +default_ttl: int
-  +get(key: String): String
-  +set(key: String, value: String, ttl: int): void
-}
 
 class DictionaryService {
   +client: DictionaryClient
-  +cache: Cache
-  +cache_ttl: int
-  +define(word: String): String
+  +rate_limiter: RateLimiter
+  +define(word: String): Definition
 }
 
 ' =========================
@@ -40,47 +29,68 @@ interface TranslationClient {
 }
 
 class YandexTranslationClient {
-  +api_key: String
-  +folder_id: String
-  +base_url: String
-  +timeout: int
   +translate(text: String, target: String, source: String): String
 }
 
 class TranslationService {
   +client: TranslationClient
-  +cache: Cache
-  +cache_ttl: int
+  +rate_limiter: RateLimiter
   +translate(text: String): String
+}
+
+' =========================
+' MESSENGER PLATFORM
+' =========================
+
+
+interface BotPlatformClient {
+  +start(): void
+  +reply(update: PlatformUpdate, text: String): void
+}
+
+class TelegramBotClient {
+  +start(): void
+  +reply(update: PlatformUpdate, text: String): void
+}
+
+class VKBotClient {
+  +start(): void
+  +reply(update: PlatformUpdate, text: String): void
 }
 
 ' =========================
 ' COMMAND / ENTRY POINT
 ' =========================
+abstract class BaseCommand {
+  {abstract} +handle(): void
+}
+
+
 class Command {
-  +telegram_bot_token: String
-  +telegram_client: TelegramClient
+  +platform_clients: List<BotPlatformClient>
   +translationService: TranslationService
   +dictionaryService: DictionaryService
   +handle(): void
-  +define(): void
-  +translate(): void
-  +help(): void
+  -setupPlatforms(): void
 }
+
 
 ' =========================
 ' RELATIONSHIPS
 ' =========================
 Command --> DictionaryService : uses
-DictionaryService --> DictionaryAPIClient : uses
+DictionaryService --> DictionaryClient : depends on
+DictionaryService --> RateLimiter : uses
 DictionaryAPIClient ..|> DictionaryClient : implements
 
 Command --> TranslationService : uses
-TranslationService --> YandexTranslationClient : uses
+TranslationService --> TranslationClient : depends on
+TranslationService --> RateLimiter : uses
 YandexTranslationClient ..|> TranslationClient : implements
+BaseCommand <|-- Command : extends
+Command --> BotPlatformClient : uses
+TelegramBotClient ..|> BotPlatformClient : implements
+VKBotClient ..|> BotPlatformClient : implements
 
-DictionaryService --> Cache : uses
-TranslationService --> Cache : uses
-RedisCache ..|> Cache : implements
 
 @enduml

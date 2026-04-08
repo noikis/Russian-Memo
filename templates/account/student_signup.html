@@ -74,6 +74,14 @@
             {% else %}
                 <p class="red-text text-darken-1" style="margin-bottom: 0;">Вход через Telegram не настроен.</p>
             {% endif %}
+            <div style="margin-top: 12px;">
+                <p class="grey-text text-darken-2" style="margin-top: 0;">Или войдите через VK <small><br>(только для учеников)</small></p>
+                {% if vk_login_enabled %}
+                    <a class="btn blue darken-2 waves-effect waves-light" href="{{ vk_login_url }}">Войти через VK</a>
+                {% else %}
+                    <p class="red-text text-darken-1" style="margin-bottom: 0;">Вход через VK не настроен.</p>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>

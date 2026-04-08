@@ -3,9 +3,10 @@ from __future__ import annotations
 import json
 import socket
 from typing import Any, Protocol
-from urllib.error import HTTPError, URLError
-from urllib.parse import quote
-from urllib.request import Request, urlopen
+import requests
+# from urllib.error import HTTPError, URLError
+# from urllib.parse import quote
+# from urllib.request import Request, urlopen
 
 from bot.domains import Definition, Meaning
 
@@ -26,21 +27,18 @@ class DictionaryAPIClient:
         if not word:
             return None
 
-        request_url = f"{self.url}{quote(word)}"
-        request = Request(request_url, headers={"Accept": "application/json"})
+        request_url = f"{self.url}{word}"
 
         try:
-            with urlopen(request, timeout=self.timeout_seconds) as response:
-                raw = response.read().decode("utf-8")
-        except HTTPError as exc:
-            if exc.code == 404:
+            response = requests.get(request_url, timeout=10)
+            response.raise_for_status()
+        except requests.HTTPError as exc:
+            if exc.response.status_code == 404:
                 return None
             return None
-        except (URLError, socket.timeout, TimeoutError, ValueError):
-            return None
-
+       
         try:
-            payload: Any = json.loads(raw)
+            payload: Any = response.json()
         except json.JSONDecodeError:
             return None
 

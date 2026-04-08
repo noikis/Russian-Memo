@@ -1,7 +1,11 @@
 import hashlib
 import hmac
+import secrets
 import time
 import json
+import urllib.parse
+import urllib.request
+import urllib.error
 from init_data_py import InitData 
 from django.conf import settings
 from django.shortcuts import redirect, render
@@ -16,12 +20,37 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views import View
 from django.views.generic import TemplateView
 from django.http import JsonResponse, HttpResponseBadRequest
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from .models import ExternalIdentity, Role, User
 from .forms import StudentSignUpForm, TeacherSignUpForm
 from .decorators import student_required, teacher_required
 
 TELEGRAM_PROVIDER = "telegram"
+VK_PROVIDER = "vk"
+
+
+def _vk_is_configured():
+    return bool(getattr(settings, 'VK_APP_ID', None) and getattr(settings, 'VK_APP_SECRET', None))
+
+
+def _with_next_param(base_url: str, next_url: str):
+    if not next_url:
+        return base_url
+    return f"{base_url}?{urllib.parse.urlencode({'next': next_url})}"
+
+
+def _vk_redirect_base():
+    host = getattr(settings, 'HOST', 'localhost')
+    if host.startswith('localhost') or host.startswith('127.0.0.1'):
+        scheme = 'http'
+    else:
+        scheme = 'https'
+    return f"{scheme}://{host}"
+
+
+def _vk_redirect_uri():
+    return f"{_vk_redirect_base()}{reverse_lazy('account:vk_oauth_callback')}"
 
 
 class StudentSignUpView(CreateView):
@@ -35,6 +64,10 @@ class StudentSignUpView(CreateView):
         kwargs['telegram_auth_url'] = self.request.build_absolute_uri(
             str(reverse_lazy('account:telegram_auth'))
         )
+        next_url = self.request.GET.get('next')
+        vk_start_url = str(reverse_lazy('account:vk_oauth_start'))
+        kwargs['vk_login_url'] = _with_next_param(vk_start_url, next_url)
+        kwargs['vk_login_enabled'] = _vk_is_configured()
         return super().get_context_data(**kwargs)
 
     def form_valid(self, form):
@@ -83,7 +116,14 @@ def login(request):
 
     # accessing the login page
     else:
-        return render(request, 'account/login.html')
+        next_url = request.GET.get('next')
+        vk_start_url = str(reverse_lazy('account:vk_oauth_start'))
+        context = {
+            'next': next_url,
+            'vk_login_url': _with_next_param(vk_start_url, next_url),
+            'vk_login_enabled': _vk_is_configured(),
+        }
+        return render(request, 'account/login.html', context)
 
 
 def logout(request):
@@ -175,6 +215,94 @@ def _parse_int(value):
         return int(value)
     except (TypeError, ValueError):
         return None
+
+
+def _vk_http_get(url: str, params: dict):
+    try:
+        full_url = f"{url}?{urllib.parse.urlencode(params)}"
+        with urllib.request.urlopen(full_url, timeout=10) as resp:
+            body = resp.read().decode('utf-8')
+    except urllib.error.HTTPError as exc:
+        try:
+            body = exc.read().decode('utf-8')
+        except Exception:
+            body = str(exc)
+        return None, f"Ошибка VK OAuth ({exc.code}): {body}"
+    except Exception as exc:
+        return None, f"Ошибка VK OAuth: {exc}"
+
+    try:
+        return json.loads(body), None
+    except json.JSONDecodeError:
+        return None, "Некорректный ответ VK OAuth."
+
+
+def _normalize_vk_profile(profile: dict):
+    if not profile:
+        return {}
+    return {
+        'username': profile.get('screen_name'),
+        'first_name': profile.get('first_name'),
+        'last_name': profile.get('last_name'),
+        'photo_url': profile.get('photo_200'),
+    }
+
+
+def _make_unique_username(base: str):
+    if not User.objects.filter(username=base).exists():
+        return base
+    while True:
+        candidate = f"{base}_{secrets.token_hex(3)}"
+        if not User.objects.filter(username=candidate).exists():
+            return candidate
+
+
+def _get_or_create_student_from_vk(user_id, profile):
+    vk_id = _parse_int(user_id)
+    if vk_id is None:
+        return None, 'Некорректный идентификатор VK.'
+
+    identity = (
+        ExternalIdentity.objects.select_related('user')
+        .filter(provider=VK_PROVIDER, provider_user_id=vk_id)
+        .first()
+    )
+    normalized = _normalize_vk_profile(profile)
+    if identity:
+        user = identity.user
+        if not user.is_student():
+            return None, 'Вход через VK доступен только ученикам.'
+        _update_external_identity(identity, normalized)
+        return user, None
+
+    with transaction.atomic():
+        username = normalized.get('username') or f'vk_user_{vk_id}'
+        username = _make_unique_username(username)
+
+        user = User(
+            username=username,
+            first_name=normalized.get('first_name') or '',
+            last_name=normalized.get('last_name') or '',
+        )
+        user.set_unusable_password()
+        user.save()
+
+        role, _ = Role.objects.get_or_create(name="student")
+        user.roles.add(role)
+
+        ExternalIdentity.objects.create(
+            user=user,
+            provider=VK_PROVIDER,
+            provider_user_id=vk_id,
+            username=normalized.get('username'),
+            first_name=normalized.get('first_name'),
+            last_name=normalized.get('last_name'),
+            photo_url=normalized.get('photo_url'),
+            auth_date=None,
+            last_login_at=timezone.now(),
+        )
+
+    return user, None
 
 
 def _update_external_identity(identity, user_data):
@@ -311,3 +439,103 @@ class TelegramMiniAppAuthPageView(TemplateView):
     Renders the mini-app auth bootstrap page that posts initData to the backend.
     """
     template_name = 'account/telegram_mini_app_auth.html'
+
+
+def vk_oauth_start(request):
+    if not _vk_is_configured():
+        messages.error(request, 'Вход через VK не настроен.')
+        return redirect('account:login')
+
+    state = secrets.token_urlsafe(24)
+    request.session['vk_oauth_state'] = state
+
+    next_url = request.GET.get('next')
+    if next_url:
+        request.session['vk_oauth_next'] = next_url
+    else:
+        request.session.pop('vk_oauth_next', None)
+
+    params = {
+        'client_id': settings.VK_APP_ID,
+        'redirect_uri': _vk_redirect_uri(),
+        'response_type': 'code',
+        'state': state,
+        'v': settings.VK_OAUTH_VERSION,
+    }
+    return redirect(f"https://oauth.vk.com/authorize?{urllib.parse.urlencode(params)}")
+
+
+def vk_oauth_callback(request):
+    if not _vk_is_configured():
+        messages.error(request, 'Вход через VK не настроен.')
+        return redirect('account:login')
+
+    expected_state = request.session.pop('vk_oauth_state', None)
+    state = request.GET.get('state')
+    if not expected_state or not state or state != expected_state:
+        messages.error(request, 'Неверное состояние авторизации VK.')
+        return redirect('account:login')
+
+    if request.GET.get('error'):
+        error_desc = request.GET.get('error_description') or 'Неизвестная ошибка VK.'
+        messages.error(request, f'Ошибка VK: {error_desc}')
+        return redirect('account:login')
+
+    code = request.GET.get('code')
+    if not code:
+        messages.error(request, 'Отсутствует код авторизации VK.')
+        return redirect('account:login')
+
+    token_payload, token_error = _vk_http_get(
+        'https://oauth.vk.com/access_token',
+        {
+            'client_id': settings.VK_APP_ID,
+            'client_secret': settings.VK_APP_SECRET,
+            'redirect_uri': _vk_redirect_uri(),
+            'code': code,
+        },
+    )
+    if token_error or not token_payload:
+        messages.error(request, token_error or 'Не удалось получить токен VK.')
+        return redirect('account:login')
+
+    if token_payload.get('error'):
+        messages.error(request, f"Ошибка VK: {token_payload.get('error_description') or token_payload.get('error')}")
+        return redirect('account:login')
+
+    access_token = token_payload.get('access_token')
+    user_id = token_payload.get('user_id')
+    if not access_token or not user_id:
+        messages.error(request, 'Некорректный ответ VK OAuth.')
+        return redirect('account:login')
+
+    profile = None
+    profile_payload, profile_error = _vk_http_get(
+        'https://api.vk.com/method/users.get',
+        {
+            'user_ids': user_id,
+            'fields': 'screen_name,photo_200',
+            'access_token': access_token,
+            'v': settings.VK_OAUTH_VERSION,
+        },
+    )
+    if not profile_error and profile_payload and profile_payload.get('response'):
+        profile = profile_payload['response'][0]
+
+    user, error = _get_or_create_student_from_vk(user_id, profile)
+    if error:
+        messages.error(request, error)
+        return redirect('account:login')
+
+    auth.login(request, user)
+    messages.success(request, 'Добро пожаловать! Вы вошли через VK.')
+
+    next_url = request.session.pop('vk_oauth_next', None)
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url,
+        allowed_hosts={request.get_host(), getattr(settings, 'HOST', '')},
+        require_https=request.is_secure(),
+    ):
+        return redirect(next_url)
+
+    return redirect('quiz:quiz_list_student')

@@ -25,7 +25,8 @@ SECRET_KEY = '(^zh-0=n*kad5k@=5_v*@x!-^xm0@4t2bae==gik3bt(z#!#h7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get('TELEGRAM_LOGIN_HOST', 'localhost'), '127.0.0.1', 'localhost']
+
+ALLOWED_HOSTS = [os.environ.get('HOST', 'localhost'), '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -217,8 +218,7 @@ MATERIAL_ADMIN_SITE = {
 
 # If you expose the site via a public domain (e.g., ngrok), add it here.
 CSRF_TRUSTED_ORIGINS = [
-    'http://kameron-benefic-madelaine.ngrok-free.dev',
-    'https://kameron-benefic-madelaine.ngrok-free.dev',
+    os.environ.get('HOST')
 ]
 
 # Telegram Login
@@ -228,3 +228,8 @@ try:
     TELEGRAM_LOGIN_MAX_AGE = int(os.environ.get('TELEGRAM_LOGIN_MAX_AGE', 24 * 60 * 60))
 except (TypeError, ValueError):
     TELEGRAM_LOGIN_MAX_AGE = 24 * 60 * 60
+
+# VK OAuth
+VK_APP_ID = os.environ.get('VK_APP_ID')
+VK_APP_SECRET = os.environ.get('VK_APP_SECRET')
+VK_OAUTH_VERSION = os.environ.get('VK_OAUTH_VERSION', '5.131')

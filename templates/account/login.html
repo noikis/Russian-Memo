@@ -43,6 +43,13 @@
             </button>
 
         </form>
+        <div class="card-panel my-2">
+            {% if vk_login_enabled %}
+                <a class="btn blue darken-2 waves-effect waves-light" href="{{ vk_login_url }}">Войти через VK</a>
+            {% else %}
+                <p class="red-text text-darken-1" style="margin-bottom: 0;">Вход через VK не настроен.</p>
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}
