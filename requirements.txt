@@ -18,3 +18,4 @@ six==1.14.0
 sqlparse==0.3.0
 wrapt==1.11.2
 psycopg2-binary>=2.9
+vk-api>=11.9
