@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
@@ -6,9 +6,10 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-# (Optional) system deps - keep minimal; add more only if you hit build/runtime errors
+# System deps needed by packages mirrored from the russianmemo conda env.
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 # Install deps first for better layer caching
@@ -20,3 +21,5 @@ RUN python -m pip install --upgrade pip setuptools wheel \
 COPY . /app
 
 EXPOSE 8000
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

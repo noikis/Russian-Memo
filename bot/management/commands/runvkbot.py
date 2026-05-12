@@ -6,6 +6,7 @@ import re
 import vk_api
 from django.core.management.base import BaseCommand
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
+from vk_api.keyboard import VkKeyboard
 
 from bot.services.dictionary_service import DictionaryService
 from bot.services.translation_service import TranslationService
@@ -48,11 +49,12 @@ class Command(BaseCommand):
             parts.append("\n\n".join(current))
         return parts or [text[:max_len]]
 
-    def _send_message(self, vk, peer_id: int, text: str) -> None:
+    def _send_message(self, vk, peer_id: int, text: str, keyboard: str = None) -> None:
         for chunk in self._split_message(text):
             vk.messages.send(
                 peer_id=peer_id,
                 message=chunk,
+                keyboard=keyboard,
                 random_id=0,
             )
 
@@ -107,6 +109,20 @@ class Command(BaseCommand):
 
                     response = translation_service.translate(query)
                     self._send_message(vk, peer_id, response)
+                    continue
+
+                if text.startswith("/app"):
+                    keyboard = VkKeyboard(one_time=False)
+                    keyboard.add_openlink_button(
+                        label="Open site",
+                        link="https://www.google.com/",
+                    )
+                    self._send_message(
+                        vk,
+                        peer_id,
+                        "Tap the button to open the site.",
+                        keyboard=keyboard.get_keyboard(),
+                    )
                     continue
             except Exception:
                 logger.exception("Unhandled exception while processing VK update")
