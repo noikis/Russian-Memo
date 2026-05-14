@@ -14,10 +14,10 @@ from account.decorators import student_required
 @login_required
 def next_practice_item(request):
     student_practice = Practice.objects.filter(
-        card__deck__student=request.user.student).order_by('next_practice')
+        card__deck__student=request.user).order_by('due')
 
     practice = student_practice.filter(
-        next_practice__lte=date.today())
+        due__lte=date.today())
 
     if len(practice) > 0:
         practice = practice[0]
@@ -31,8 +31,11 @@ def next_practice_item(request):
         return render(request, 'games/flashcards.html', context)
 
     else:
+        next_due = None
+        if student_practice.exists():
+            next_due = student_practice.first().due
         context = {
-            'next_practice': student_practice.first().next_practice
+            'next_due': next_due
         }
         return render(request, 'games/flashcards.html', context)
 

@@ -1,6 +1,6 @@
 from django import forms
 from django.forms.utils import ValidationError
-from .models import Question, Answer, StudentAnswer
+from .models import Question, Answer
 
 
 class QuestionForm(forms.ModelForm):
@@ -24,16 +24,12 @@ class BaseAnswerInlineFormSet(forms.BaseInlineFormSet):
                 'Mark at least one answer as correct.', code='no_correct_answer')
 
 
-class TakeQuizForm(forms.ModelForm):
+class TakeQuizForm(forms.Form):
     answer = forms.ModelChoiceField(
         queryset=Answer.objects.none(),
         widget=forms.RadioSelect(),
         required=True,
         empty_label=None)
-
-    class Meta:
-        model = StudentAnswer
-        fields = ('answer', )
 
     def __init__(self, *args, **kwargs):
         question = kwargs.pop('question')

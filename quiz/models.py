@@ -1,14 +1,16 @@
 from django.db import models
 
-from account.models import User, Student
+from account.models import User
 
 
 class Quiz(models.Model):
-    owner = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='quizzes')
     name = models.CharField(max_length=255)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="quizzes")
+    created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
+    deleted_at = models.DateTimeField(null=True, blank=True, db_index=True)
 
     class Meta:
+        db_table = "quizzes"
         verbose_name_plural = "Quizzes"
 
     def __str__(self):
@@ -16,42 +18,60 @@ class Quiz(models.Model):
 
 
 class Question(models.Model):
-    quiz = models.ForeignKey(
-        Quiz, on_delete=models.CASCADE, related_name='questions')
-    text = models.CharField('Question', max_length=255)
+    text = models.TextField()
+    position = models.IntegerField(default=1)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="questions")
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self._state.adding and self.quiz_id is not None:
+            self.position = (
+                Question.objects.filter(quiz_id=self.quiz_id).count() + 1
+            )
+        super().save(*args, **kwargs)
+
+    class Meta:
+        db_table = "questions"
 
     def __str__(self):
         return self.text
 
 
 class Answer(models.Model):
-    question = models.ForeignKey(
-        Question, on_delete=models.CASCADE, related_name='answers')
-    text = models.CharField('Answer', max_length=255)
-    is_correct = models.BooleanField('Correct answer', default=False)
+    text = models.TextField()
+    is_correct = models.BooleanField(default=False)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name="answers")
+    deleted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "answers"
 
     def __str__(self):
         return self.text
 
 
-class TakenQuiz(models.Model):
-    student = models.ForeignKey(
-        Student, on_delete=models.CASCADE, related_name='taken_quizzes')
-    quiz = models.ForeignKey(
-        Quiz, on_delete=models.CASCADE, related_name='taken_quizzes')
+class QuizAttempt(models.Model):
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE, related_name="attempts")
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name="quiz_attempts")
+    started_at = models.DateTimeField(auto_now_add=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
     score = models.IntegerField()
-    percentage = models.FloatField()
-    date = models.DateTimeField(auto_now_add=True)
+    percentage = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:
-        verbose_name_plural = "Taken Quizzes"
+        db_table = "quiz_attempts"
 
     def __str__(self):
         return "id_{}".format(self.pk)
 
 
-class StudentAnswer(models.Model):
-    student = models.ForeignKey(
-        Student, on_delete=models.CASCADE, related_name='quiz_answers')
-    answer = models.ForeignKey(
-        Answer, on_delete=models.CASCADE, related_name='+')
+class SelectedAnswer(models.Model):
+    attempt = models.ForeignKey(QuizAttempt, on_delete=models.CASCADE, related_name="selected_answers")
+    selected_answer = models.ForeignKey(
+        Answer, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
+    answered_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "selected_answers"
+

@@ -31,6 +31,7 @@
   text-align: center;
   transition: transform 1s ease-in-out;
   transform-style: preserve-3d;
+  position: relative;
 }
 
 .card figure {
@@ -38,6 +39,9 @@
   width: 100%;
   height: 100%;
   margin: 0;
+  top: 0;
+  left: 0;
+  backface-visibility: hidden;
 }
 
 .card .back {

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+     x="0px" y="0px" viewBox="0 0 473.68 473.68" xml:space="preserve">
+  <defs>
+    <clipPath id="clipCircle">
+      <circle cx="236.84" cy="236.84" r="236.84"/>
+    </clipPath>
+  </defs>
+
+  <!-- Clip the Union Jack to a circle (same proportions as the original file) -->
+  <g clip-path="url(#clipCircle)">
+    <g transform="scale(7.894666666666667)">
+      <rect x="0" y="0" width="60" height="60" fill="#012169"/>
+      <!-- White diagonals -->
+      <path d="M0,0 L60,60 M60,0 L0,60" stroke="#FFFFFF" stroke-width="12"/>
+      <!-- Red diagonals -->
+      <path d="M0,0 L60,60 M60,0 L0,60" stroke="#C8102E" stroke-width="8"/>
+      <!-- White central cross -->
+      <path d="M0,30 H60 M30,0 V60" stroke="#FFFFFF" stroke-width="20"/>
+      <!-- Red central cross -->
+      <path d="M0,30 H60 M30,0 V60" stroke="#C8102E" stroke-width="12"/>
+    </g>
+  </g>
+</svg>

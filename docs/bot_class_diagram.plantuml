@@ -1,0 +1,96 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+interface DictionaryClient {
+  +language_code: String 
+  +get_definition(word: String): Definition
+}
+
+interface RateLimiter
+
+class DictionaryAPIClient {
+  +language_code: String
+  +get_definition(word: String): Definition
+}
+
+
+class DictionaryService {
+  +client: DictionaryClient
+  +rate_limiter: RateLimiter
+  +define(word: String): Definition
+}
+
+' =========================
+' TRANSLATION
+' =========================
+
+interface TranslationClient {
+  +translate(text: String, target: String, source: String): String
+}
+
+class YandexTranslationClient {
+  +translate(text: String, target: String, source: String): String
+}
+
+class TranslationService {
+  +client: TranslationClient
+  +rate_limiter: RateLimiter
+  +translate(text: String): String
+}
+
+' =========================
+' MESSENGER PLATFORM
+' =========================
+
+
+interface BotPlatformClient {
+  +start(): void
+  +reply(update: PlatformUpdate, text: String): void
+}
+
+class TelegramBotClient {
+  +start(): void
+  +reply(update: PlatformUpdate, text: String): void
+}
+
+class VKBotClient {
+  +start(): void
+  +reply(update: PlatformUpdate, text: String): void
+}
+
+' =========================
+' COMMAND / ENTRY POINT
+' =========================
+abstract class BaseCommand {
+  {abstract} +handle(): void
+}
+
+
+class Command {
+  +platform_clients: List<BotPlatformClient>
+  +translationService: TranslationService
+  +dictionaryService: DictionaryService
+  +handle(): void
+  -setupPlatforms(): void
+}
+
+
+' =========================
+' RELATIONSHIPS
+' =========================
+Command --> DictionaryService : uses
+DictionaryService --> DictionaryClient : depends on
+DictionaryService --> RateLimiter : uses
+DictionaryAPIClient ..|> DictionaryClient : implements
+
+Command --> TranslationService : uses
+TranslationService --> TranslationClient : depends on
+TranslationService --> RateLimiter : uses
+YandexTranslationClient ..|> TranslationClient : implements
+BaseCommand <|-- Command : extends
+Command --> BotPlatformClient : uses
+TelegramBotClient ..|> BotPlatformClient : implements
+VKBotClient ..|> BotPlatformClient : implements
+
+
+@enduml

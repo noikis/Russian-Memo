@@ -5,34 +5,35 @@
 {% block content %}
 
 
-<h2 class="mb-3">{{ quiz.name }} Results</h2>
+<h2 class="mb-3">{{ quiz.name }} — результаты</h2>
+
+{% if taken_quizzes|length == 0 %}
+    <p>Пока что никто не проходил этот тест.</p>
+{% else %}
+<h4> <span >Средний результат: {{ quiz_score.average_score|default_if_none:0 }} %</span></h4>
+{% endif %}
 
 <div class="card">
-    <div class="card-header">
-        <strong>Taken Quizzes</strong>
-        <span class="badge badge-pill badge-primary float-right">Average Score:
-            {{ quiz_score.average_score|default_if_none:0.0 }}</span>
-    </div>
     <table class="table mb-0">
         <thead>
             <tr>
-                <th>Student</th>
-                <th>Date</th>
-                <th>Percentage</th>
+                <th>Ученик</th>
+                <th>Дата</th>
+                <th>Процент</th>
             </tr>
         </thead>
         <tbody>
             {% for taken_quiz in taken_quizzes %}
             <tr>
-                <td>{{ taken_quiz.student.user.username }}</td>
-                <td>{{ taken_quiz.date|naturaltime }}</td>
+                <td>{{ taken_quiz.student.username }}</td>
+                <td>{{ taken_quiz.finished_at|naturaltime }}</td>
                 <td>{{ taken_quiz.percentage }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    <div class="card-footer text-muted">
-        Total respondents: <strong>{{ total_taken_quizzes }}</strong>
+    <div class="card-content">
+        <p>Всего участников: <strong>{{ total_taken_quizzes }}</strong></p>
     </div>
 </div>
 {% endblock %}

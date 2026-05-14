@@ -1,3 +1,8 @@
+// TODO: Change host before deployment
+const host = "https://kameron-benefic-madelaine.ngrok-free.dev/"
+const tg = window.Telegram?.WebApp;
+// TODO: Handle case when username is undefined
+username = tg?.initDataUnsafe?.username || "noikis";
 window.addEventListener("load", init);
 
 // DOM Elements
@@ -37,8 +42,9 @@ speakerBtn.addEventListener("click", speak);
 // Functions
 function init() {
     const fetchCards = async () => {
-        let response = await fetch("http://127.0.0.1:8000/api/cards");
+        let response = await fetch(`${host}/api/users/${username}/cards`);
         let data = await response.json();
+        console.log(data);
         return data;
     }
     seconds.innerHTML = currentLevel;

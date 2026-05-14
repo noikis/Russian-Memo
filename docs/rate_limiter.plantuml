@@ -1,0 +1,62 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "rate_limiter.domain" {
+
+  class RateLimitDecision {
+    +allowed: bool
+    +retry_after: int
+    +reset_at: int
+  }
+
+  interface RateLimitStrategy {
+    +check(user_id: String, action: String, cost: int): RateLimitDecision
+  }
+}
+
+package "rate_limiter.application" {
+
+  class RateLimiter {
+    -strategies: List<RateLimitStrategy>
+    +check(user_id: String, action: String, cost: int): RateLimitDecision
+  }
+}
+
+package "rate_limiter.application.strategies" {
+
+  class TokenBucketStrategy {
+    +capacity: int
+    +refill_rate_per_sec: float
+    +check(user_id: String, action: String, cost: int): RateLimitDecision
+  }
+
+  class MonthlyCounterStrategy {
+    +limit: int
+    +check(user_id: String, action: String, cost: int): RateLimitDecision
+  }
+
+  class MonthlyUniqueUsersStrategy {
+    +limit: int
+    +check(user_id: String, action: String, cost: int): RateLimitDecision
+  }
+
+  TokenBucketStrategy ..|> RateLimitStrategy
+  MonthlyCounterStrategy ..|> RateLimitStrategy
+  MonthlyUniqueUsersStrategy ..|> RateLimitStrategy
+}
+
+package "rate_limiter.infrastructure" {
+
+  class RedisStore {
+    +token_bucket(...)
+    +incr_monthly(...)
+    +register_user(...)
+  }
+}
+
+RateLimiter o-- "1..*" RateLimitStrategy
+TokenBucketStrategy --> RedisStore
+MonthlyCounterStrategy --> RedisStore
+MonthlyUniqueUsersStrategy --> RedisStore
+
+@enduml

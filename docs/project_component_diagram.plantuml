@@ -1,0 +1,112 @@
+@startuml
+title Russian Memo - Project Component Diagram
+left to right direction
+
+skinparam componentStyle rectangle
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+actor Student
+actor Teacher
+actor "Telegram Mini App User" as TelegramStudent
+actor "Telegram Bot User" as BotUser
+
+rectangle "Client / Delivery Channels" {
+  component "Web Browser" as Browser
+  component "Games JS\nhangman.js\nspeed_typing.js\nflashcards.js" as GamesJS
+  component "Telegram Mini App Auth Page\ntemplates/account/telegram_mini_app_auth.html" as TgMiniPage
+}
+
+node "Django Web App (russian_memo)" {
+  component "URL Router\nrussian_memo.urls" as UrlRouter
+  component "Home Pages\nrussian_memo.views" as Home
+  component "Account App\nviews/forms/decorators\nUser, Role, ExternalIdentity" as Account
+  component "Words App\ndecks, cards, cards JSON API" as Words
+  component "Memorisation App\nflashcards, ratings,\nPractice, Review,\nalgorithm.py" as Memo
+  component "Quiz App\nteacher authoring,\nstudent attempts/results" as Quiz
+  component "Django Admin" as Admin
+  component "Templates + Static Assets\nDjango templates\nMaterialize CSS\ncustom JS/CSS/images" as Assets
+}
+
+database "Application Database\nSQLite (default)\nPostgreSQL (docker-compose)" as DB
+
+node "Telegram Bot Runtime" {
+  component "runbot management command\nbot/management/commands/runbot.py" as Runbot
+  component "DictionaryService" as DictService
+  component "TranslationService" as TransService
+  component "DictionaryAPIClient" as DictClient
+  component "YandexTranslationClient" as YandexClient
+}
+
+cloud "External Services" {
+  component "Telegram Platform\nLogin Widget\nWebApp SDK\nBot API" as TelegramPlatform
+  component "VK OAuth API" as VK
+  component "Dictionary API\napi.dictionaryapi.dev" as DictionaryAPI
+  component "Yandex Translate API" as YandexAPI
+}
+
+Student --> Browser
+Teacher --> Browser
+TelegramStudent --> TelegramPlatform
+BotUser --> TelegramPlatform
+
+Browser --> UrlRouter : HTML requests
+Browser --> Assets : loads static files
+Browser ..> GamesJS : executes page scripts
+Browser ..> TgMiniPage : renders Telegram auth bootstrap
+
+GamesJS --> Words : GET /api/users/<username>/cards/
+TgMiniPage --> TelegramPlatform : reads initData
+TgMiniPage --> Account : POST /account/telegram_webapp_auth/
+
+UrlRouter --> Home
+UrlRouter --> Account
+UrlRouter --> Words
+UrlRouter --> Memo
+UrlRouter --> Quiz
+UrlRouter --> Admin
+
+Home --> Assets : renders landing page
+Account --> Assets : renders auth and dashboard pages
+Words --> Assets : renders deck and card pages
+Memo --> Assets : renders flashcards and game pages
+Quiz --> Assets : renders teacher and student quiz flows
+
+Account --> DB
+Words --> DB
+Memo --> DB
+Quiz --> DB
+Admin --> DB
+
+Words ..> Account : Deck.student -> User
+Quiz ..> Account : owner/student -> User
+Memo ..> Words : Practice.card -> Card
+Words ..> Memo : create initial Practice on Card post_save
+
+Account --> TelegramPlatform : Telegram login validation
+Account --> VK : VK OAuth exchange
+
+TelegramPlatform --> Runbot : update delivery / polling
+Runbot --> DictService
+Runbot --> TransService
+DictService --> DictClient
+TransService --> YandexClient
+DictClient --> DictionaryAPI
+YandexClient --> YandexAPI
+
+note bottom of Words
+  Owns Deck and Card models.
+  Also exposes the JSON card feed consumed by the game scripts.
+end note
+
+note bottom of Memo
+  CardPractice and CardReview are separate from Card data,
+  but are created from Card lifecycle events.
+end note
+
+note bottom of Runbot
+  Bot runtime is separate from Django web requests and
+  currently integrates only with external APIs, not the app database.
+end note
+
+@enduml

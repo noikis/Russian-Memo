@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2 class="mb-3">
-    {{ deck.category }}
+    {{ deck.title }}
 
 </h2>
 <div class="row mb-3">
@@ -9,9 +9,9 @@
         <form method="post" novalidate>
             {% csrf_token %}
             {{ form }}
-            <button type="submit" class="btn green">Save changes</button>
-            <a href="#" class="btn btn-outline-secondary" role="button">Nevermind</a>
-            <a href="{% url 'words:deck_delete' deck.id %}" class="btn red float-right">Delete</a>
+            <button type="submit" class="btn green">Сохранить изменения</button>
+            <a href="#" class="btn btn-outline-secondary" role="button">Отмена</a>
+            <a href="{% url 'words:deck_delete' deck.id %}" class="btn red float-right">Удалить</a>
         </form>
     </div>
 </div>

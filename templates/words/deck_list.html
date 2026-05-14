@@ -5,12 +5,12 @@
     <div class="col s12 m4">
         <div class="card-panel" style="background-color: {{deck.color}};">
             <a href="{% url 'words:card_list' deck.id %}">
-                <h3 class="white-text center">{{ deck.category}}</h3>
+                <h3 class="white-text center">{{ deck.title}}</h3>
             </a>
         </div>
     </div>
     {% empty %}
-    <p class="flow-text center"> You have no Deck</p>
+    <p class="flow-text center"> У вас нет колод</p>
     {% endfor %}
 </div>
 <div class="fixed-action-btn">

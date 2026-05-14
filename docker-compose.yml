@@ -1,0 +1,36 @@
+services:
+  web:
+    build: .
+    container_name: memo-web
+    command: >
+      sh -c "
+      python manage.py migrate &&
+      python manage.py runserver 0.0.0.0:8000
+      "
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
+  tgbot:
+    build: .
+    container_name: memo-tgbot
+    command: python manage.py runtgbot
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: unless-stopped
+
+  vkbot:
+    build: .
+    container_name: memo-vkbot
+    command: python manage.py runvkbot
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: unless-stopped

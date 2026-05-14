@@ -8,7 +8,6 @@ from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 
 
 from .models import Card, Deck
-from memorisation.models import Practice
 from account.decorators import teacher_required, student_required
 
 
@@ -16,13 +15,13 @@ from account.decorators import teacher_required, student_required
 @student_required
 def deck_create(request):
     if request.method == "POST":
-        category = request.POST['category']
+        title = request.POST['title']
         color = request.POST['color']
-        student = request.user.student
+        student = request.user
 
-        deck = Deck(student=student, category=category, color=color)
+        deck = Deck(student=student, title=title, color=color)
         deck.save()
-        messages.success(request, "Deck created!")
+        messages.success(request, "Колода создана.")
         return redirect('words:deck_list')
 
     return render(request, 'words/deck_add.html')
@@ -34,7 +33,7 @@ class DeckListView(ListView):
     template_name = 'words/deck_list.html'
 
     def get_queryset(self):
-        queryset = Deck.objects.filter(student=self.request.user.student)
+        queryset = Deck.objects.filter(student=self.request.user)
         return queryset
 
 
@@ -66,25 +65,22 @@ class CardCreateView(CreateView):
         card.deck = Deck.objects.get(pk=deck_id)
         card.save()
 
-        practice = Practice(card=card)
-        practice.save()
-
-        messages.success(self.request, "Card created!")
+        messages.success(self.request, "Карточка создана.")
         return redirect('words:card_list', deck_id)
 
 
 @method_decorator([login_required, student_required], name='dispatch')
 class DeckUpdateView(UpdateView):
     model = Deck
-    fields = ('category', 'color', )
+    fields = ('title', 'color', )
     context_object_name = 'deck'
     template_name = 'words/deck_update.html'
 
     def get_queryset(self):
-        return self.request.user.student.decks.all()
+        return self.request.user.decks.all()
 
     def get_success_url(self):
-        messages.success(self.request, "Deck updated!")
+        messages.success(self.request, "Колода обновлена.")
         return reverse('words:deck_update', kwargs={'pk': self.object.pk})
 
 
@@ -100,7 +96,7 @@ class CardUpdateView(UpdateView):
         return queryset
 
     def get_success_url(self):
-        messages.success(self.request, "Card updated!")
+        messages.success(self.request, "Карточка обновлена.")
         return reverse('words:card_update', kwargs={'pk': self.object.pk})
 
 
@@ -114,7 +110,7 @@ class CardDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         card = self.get_object()
         messages.success(
-            request, 'The card %s was deleted with success!' % card.word)
+            request, 'Карточка "%s" успешно удалена.' % card.word)
         return super().delete(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -122,7 +118,7 @@ class CardDeleteView(DeleteView):
         return queryset
 
     def get_success_url(self):
-        messages.error(self.request, "Card deleted.")
+        messages.error(self.request, "Карточка удалена.")
         return reverse('words:deck_list')
 
 
@@ -136,7 +132,7 @@ class DeckDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         deck = self.get_object()
         messages.success(
-            request, 'The deck %s was deleted with success!' % deck.category)
+            request, 'Колода "%s" успешно удалена.' % deck.title)
         return super().delete(request, *args, **kwargs)
 
     def get_queryset(self):
@@ -144,16 +140,13 @@ class DeckDeleteView(DeleteView):
         return queryset
 
     def get_success_url(self):
-        messages.error(self.request, "Deck deleted.")
+        messages.error(self.request, "Колода удалена.")
         return reverse('words:deck_list')
 
 
-def cards(request):
-    queryset = Card.objects.all()
+@login_required
+def cards(request, username):
+    queryset = Card.objects.filter(deck__student__user__username=username)
     queryset = serialize('json', queryset)
     return HttpResponse(queryset, content_type="application/json")
 
-
-@login_required
-def fetch_cards(request):
-    return render(request, 'games/fetch_test.html')

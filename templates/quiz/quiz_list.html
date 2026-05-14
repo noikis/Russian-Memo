@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h2 class="mb-3">My Quizzes</h2>
+<h2 class="mb-3">Мои тесты</h2>
 <div class="fixed-action-btn">
     <a href="{% url 'quiz:add_quiz' %}" class="btn-floating btn-large waves-effect waves-light indigo">
         <i class="material-icons">add</i>
@@ -13,8 +13,8 @@
     <table class="centered responsive-table striped">
         <thead>
             <tr>
-                <th>Quiz</th>
-                <th>Questions</th>
+                <th>Тест</th>
+                <th>Вопросы</th>
                 <th></th>
             </tr>
         </thead>
@@ -43,7 +43,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td class="bg-light text-center font-italic" colspan="5">You haven't created any quiz yet.</td>
+                <td class="bg-light text-center font-italic" colspan="5">Вы еще не создали ни одного теста.</td>
             </tr>
             {% endfor %}
         </tbody>

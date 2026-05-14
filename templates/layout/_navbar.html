@@ -1,8 +1,8 @@
 {% load memorisation_extras %}
 <ul id="dropdown1" class="dropdown-content bg-primary">
-  <li><a href="{% url 'memo:hangman' %}">Hangman</a></li> 
+  <li><a href="{% url 'memo:hangman' %}">Виселица</a></li> 
   <li class="divider"></li>
-  <li><a href="{% url 'memo:speed_typing' %}">Speed Typing</a></li>
+  <li><a href="{% url 'memo:speed_typing' %}">Скоростной набор</a></li>
 </ul>
 {% if request.path == '/' %}
   <nav class="transparent">
@@ -11,37 +11,36 @@
 {% endif %}
     <div class="nav-wrapper">
       <div class="container">
-        <a href="#" class="brand-logo"> Memo</a>
+        <a href="#" class="brand-logo">Мемо</a>
         <a href="#" class="sidenav-trigger" data-target="mobile-nav">
           <i class="material-icons">menu</i>
         </a>
         <ul id="nav-mobile" class="right hide-on-med-and-down">
-          <li><a href="{% url 'home' %}">Home</a></li>
+          <li><a href="{% url 'home' %}">Главная</a></li>
         {% if request.user.is_authenticated %} 
           {% if request.user.is_teacher %}
           <li>
-            <a href="{% url 'quiz:quiz_list' %}"> my Quizzes</a>
+            <a href="{% url 'quiz:quiz_list' %}">Мои тесты</a>
           </li>
 
           {% elif request.user.is_student %}
           <li>
-            <a href="{% url 'quiz:quiz_list_student' %}"> my Quizzes</a>
+            <a href="{% url 'quiz:quiz_list_student' %}">Мои тесты</a>
           </li>
           <li>
-            <a href="{% url 'quiz:taken_quiz' %}"> Taken Quizzes</a>
+            <a href="{% url 'quiz:taken_quiz' %}">Пройденные тесты</a>
           </li>
           <li>
-            <a href="{% url 'words:deck_list' %}"> Decks</a>
+            <a href="{% url 'words:deck_list' %}">Колоды</a>
           </li>
           <li>
             <a href="{% url 'memo:flashcards' %}">
-              Flash Cards 
-              <span class="badge bg-secondary text-white">{% to_practice request.user %}</span>
+              Карточки
             </a>
           </li>
           <li>
             <a class="dropdown-trigger" href="#!" data-target="dropdown1"
-              >Games<i class="material-icons right">arrow_drop_down</i></a
+              >Игры<i class="material-icons right">arrow_drop_down</i></a
             >
           </li>
 
@@ -51,22 +50,22 @@
             <a
               href="{% url 'account:logout' %}"
               class="waves-effect waves-light btn bg-secondary"
-              >Log out
+              >Выйти
               <i class="material-icons right">exit_to_app</i>
             </a>
           </li>
         {% else %}
           <li>
             <a href="{% url 'account:student_registration' %}"
-              >Student Signup</a
+              >Я ученик</a
             >
           </li>
           <li>
             <a href="{% url 'account:teacher_registration' %}"
-              >Teacher Signup</a
+              >Я преподаватель</a
             >
           </li>
-          <li><a href="{% url 'account:login' %}">Sign In</a></li>
+          <li><a href="{% url 'account:login' %}">Войти</a></li>
 
         {% endif %}
         </ul>
@@ -76,48 +75,113 @@
 
   <!-- Side Nav -->
   <ul class="sidenav" id="mobile-nav">
-    <li>
-      <h4 class="deep-purple-text center">Russian Memo</h4>
+    <li class="bg-primary">
+      <div class="section center-align white-text">
+        <span class="flow-text">Мемо</span>
+        <p class="grey-text text-lighten-4">Учитесь и практикуйтесь где угодно</p>
+      </div>
     </li>
+    <li><div class="divider"></div></li>
     <li>
-      <div class="divider"></div>
-    </li>
-    <li>
-      <a href="{% url 'home' %}" class="black-text">
-        <i class="material-icons black-text">home</i>Home
+      <a href="{% url 'home' %}" class="black-text sidenav-close nav-link-icon">
+        <i class="material-icons black-text">home</i>Главная
       </a>
     </li>
     {% if request.user.is_authenticated %}
-    <li>
-      <a href="{% url 'account:dashboard' %}" class="black-text">
-        <i class="material-icons black-text">dashboard</i>
-        Dashboard
-      </a>
-    </li>
-    <li>
-      <a href="{% url 'account:logout' %}" class="black-text">
-        <i class="material-icons black-text">exit_to_app</i>
-        Logout
-      </a>
-    </li>
+      {% if request.user.is_teacher %}
+      <li>
+        <a href="{% url 'quiz:quiz_list' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">assignment</i>Мои тесты
+        </a>
+      </li>
+      {% elif request.user.is_student %}
+      <li>
+        <a href="{% url 'quiz:quiz_list_student' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">assignment_turned_in</i>Мои тесты
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'quiz:taken_quiz' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">history</i>Пройденные тесты
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'words:deck_list' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">collections_bookmark</i>Колоды
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'memo:flashcards' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">style</i>
+          Карточки
+        </a>
+      </li>
+      {% endif %}
+      <li class="no-padding">
+        <ul class="collapsible collapsible-accordion">
+          <li>
+            <a class="collapsible-header black-text nav-link-icon">
+              <i class="material-icons black-text">sports_esports</i>Игры
+              <i class="material-icons right">arrow_drop_down</i>
+            </a>
+            <div class="collapsible-body">
+              <ul>
+                <li>
+                  <a href="{% url 'memo:hangman' %}" class="black-text sidenav-close">Виселица</a>
+                </li>
+                <li>
+                  <a href="{% url 'memo:speed_typing' %}" class="black-text sidenav-close">Скоростной набор</a>
+                </li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a href="{% url 'account:logout' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">exit_to_app</i>Выйти
+        </a>
+      </li>
     {% else %}
-    <li>
-      <a href="{% url 'account:student_registration' %}" class="black-text">
-        <i class="material-icons black-text">event_seat</i> Student Registration
-      </a>
-    </li>
-    <li>
-      <a href="{% url 'account:teacher_registration' %}" class="black-text">
-        <i class="material-icons black-text">event_seat</i> Teacher Registration
-      </a>
-    </li>
-    <li>
-      <a href="{% url 'account:login' %}" class="black-text">
-        <i class="material-icons black-text">event_seat</i> Sign In
-      </a>
-    </li>
+      <li>
+        <a href="{% url 'account:student_registration' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">school</i>Я ученик
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'account:teacher_registration' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">menu_book</i>Я преподаватель
+        </a>
+      </li>
+      <li>
+        <a href="{% url 'account:login' %}" class="black-text sidenav-close nav-link-icon">
+          <i class="material-icons black-text">person</i>Войти
+        </a>
+      </li>
     {% endif %}
   </ul>
+
+  <style>
+    .nav-link-icon {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px;
+    }
+
+    .nav-link-icon .material-icons {
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .collapsible-header .material-icons.right {
+      margin-left: auto;
+    }
+
+    .sidenav .badge {
+      margin-left: auto;
+    }
+  </style>
 
   <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -128,6 +192,8 @@
 
       const dropDown = document.querySelectorAll('.dropdown-trigger');
       M.Dropdown.init(dropDown);
+
+      const accordions = document.querySelectorAll('.collapsible-accordion');
+      M.Collapsible.init(accordions);
     });
   </script>
-</nav>

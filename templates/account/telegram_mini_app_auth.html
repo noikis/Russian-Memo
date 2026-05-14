@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация мини-приложения Telegram</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script>
+      (function () {
+        const tg = window.Telegram?.WebApp;
+        console.log("Telegram:", window.Telegram);
+        console.log("WebApp:", tg);
+
+        // Only run inside Telegram WebApp with real initData
+        if (!tg || !tg.initData) {
+          console.log("Not running inside Telegram WebApp context or missing initData.");
+          return;
+        }
+
+        if (window.__tgAuthInFlight) return;
+        window.__tgAuthInFlight = true;
+
+        (async () => {
+          try {
+            const res = await fetch("{% url 'account:telegram_webapp_auth' %}", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-Requested-With": "XMLHttpRequest"
+              },
+              body: "init_data=" + encodeURIComponent(tg.initData),
+              credentials: "same-origin"
+            });
+            const data = await res.json();
+            if (data.ok && data.redirect) {
+              window.location.href = data.redirect;
+            } else if (data.error) {
+              console.warn("Telegram WebApp auth failed:", data.error);
+            }
+          } catch (err) {
+            console.error("Telegram WebApp auth error:", err);
+          } finally {
+            window.__tgAuthInFlight = false;
+          }
+        })();
+      })();
+    </script>
+
+</head>
+<body>
+</body>
+</html>
+   

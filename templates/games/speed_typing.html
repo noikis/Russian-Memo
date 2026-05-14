@@ -1,12 +1,12 @@
 {% load static %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Speed Typing Game</title>
+    <title>Игра «Скоростной набор»</title>
     <link rel="stylesheet" href="{% static 'css/materialize.min.css' %}" />
     <link
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
@@ -22,8 +22,8 @@
       <!-- Word & Input -->
 
       <p class="flow-text font-weight-bold">
-        Type The Translation Of This Word Within
-        <strong class="yellow-text" id="seconds"></strong> Seconds:
+        Введите перевод этого слова за
+        <strong class="yellow-text" id="seconds"></strong> секунд:
       </p>
       <div class="row my-3 valign-wrapper">
         <div class="col s9">
@@ -36,7 +36,7 @@
       <input
         type="text"
         class="white-text"
-        placeholder="Start typing..."
+        placeholder="Начните печатать..."
         id="word-input"
       />
       <h4 class="mt-3 yellow-text" id="message"></h4>
@@ -45,15 +45,15 @@
       <div class="row mt-5">
         <div class="col m6">
           <h4>
-            Time Left:
+            Осталось времени:
             <span id="time">0</span>
           </h4>
         </div>
         <div class="col m6">
-          <h4>
-            Score:
+          <!-- <h4>
+            Очки:
             <span id="score">0</span>
-          </h4>
+          </h4> -->
         </div>
       </div>
 
@@ -61,11 +61,11 @@
       <div class="row mt-5">
         <div class="col-md-12">
           <div class="card-panel bg-secondary black-text font-weight-bold mb-5">
-            <h5>Instructions</h5>
+            <h5>Инструкции</h5>
             <p>
-              Type the translation of each word in the given amount of seconds
-              to score. To play again, just type the current word. Your score
-              will reset
+              Введите перевод каждого слова за отведенное количество секунд,
+              чтобы заработать очки. Чтобы начать заново, просто введите текущее
+              слово. Ваш счет будет сброшен
             </p>
           </div>
         </div>
@@ -75,14 +75,15 @@
     <div class="popup-container">
       <div class="popup card indigo">
         <div class="card-content">
-          <h3 id="final-message">Unfortunatly you lost &#128531;</h3>
+          <h3 id="final-message">К сожалению, вы проиграли &#128531;</h3>
           <a href="{% url 'memo:speed_typing' %}" class="btn" id="play-btn">
             <i class="material-icons">replay</i>
-            Play Again
+            Сыграть снова
           </a>
         </div>
       </div>
     </div>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="{% static 'js/speed_typing.js' %}"></script>
     <script src="{% static 'js/materialize.min.js' %}"></script>
   </body>

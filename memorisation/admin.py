@@ -1,11 +1,7 @@
-from django.contrib.admin import ModelAdmin, register
+from django.contrib import admin
 
-from .models import Practice
+from .models import CardPractice, CardReview
 
 
-@register(Practice)
-class PracticeAdmin(ModelAdmin):
-    list_display = ('card', 'easy_factor',
-                    'next_practice', 'times_practiced', )
-
-    order_by = ['student']
+admin.site.register(CardPractice)
+admin.site.register(CardReview)
