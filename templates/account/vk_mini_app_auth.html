@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VK Mini App Auth</title>
-    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
     <script>
       (function () {
         const launchParams = window.location.search.slice(1);
@@ -16,27 +15,10 @@
         if (window.__vkAuthInFlight) return;
         window.__vkAuthInFlight = true;
 
-        async function getProfile() {
-          try {
-            const bridge = window.vkBridge;
-            if (!bridge) return null;
-            await bridge.send("VKWebAppInit");
-            return await bridge.send("VKWebAppGetUserInfo");
-          } catch (err) {
-            console.warn("VK profile request failed:", err);
-            return null;
-          }
-        }
-
         (async () => {
           try {
             const body = new URLSearchParams();
             body.set("launch_params", launchParams);
-
-            const profile = await getProfile();
-            if (profile) {
-              body.set("profile", JSON.stringify(profile));
-            }
 
             const res = await fetch("{% url 'account:vk_miniapp_auth' %}", {
               method: "POST",

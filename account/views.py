@@ -200,8 +200,10 @@ def _validate_webapp_init_data(init_data_raw: str):
 
         is_valid = init_data.validate(
             bot_token=bot_token,
-            lifetime=3600,   # seconds
+            lifetime=max_age,
         )
+        if not is_valid:
+            return False, 'ÐŸÐ¾Ð´Ð¿Ð¸ÑÑŒ Telegram Ð½Ðµ Ð¿Ñ€Ð¾ÑˆÐ»Ð° Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÑƒ.'
 
         user = init_data.user  # parsed user object (if valid)
         return True, user
@@ -409,9 +411,14 @@ def _get_or_create_student_from_telegram(user_data):
         return user, None
 
     with transaction.atomic():
+        username = (
+            _get_telegram_field(user_data, 'username')
+            or f'tg_user_{telegram_id}'
+        )
+        username = _make_unique_username(username)
+
         user = User(
-            username=_get_telegram_field(user_data, 'username')
-            or f'tg_user_{telegram_id}',
+            username=username,
             first_name=_get_telegram_field(user_data, 'first_name') or '',
             last_name=_get_telegram_field(user_data, 'last_name') or '',
         )
