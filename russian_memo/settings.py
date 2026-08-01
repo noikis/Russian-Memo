@@ -4,6 +4,13 @@ from pathlib import Path
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    value = os.environ.get(name)
+    if value is None:
+        return default
+    return value.strip().lower() in {'1', 'true', 'yes', 'on'}
+
 # Load environment variables from .env if present (simple parser to avoid extra deps)
 ENV_PATH = Path(BASE_DIR) / '.env'
 if ENV_PATH.is_file():
@@ -33,7 +40,14 @@ PUBLIC_BASE_URL = (
     or ('http://localhost:8000' if HOST.startswith(('localhost', '127.0.0.1')) else f'https://{HOST}')
 ).rstrip('/')
 
-ALLOWED_HOSTS = [HOST, '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get('ALLOWED_HOSTS', f'{HOST},127.0.0.1,localhost').split(',')
+    if host.strip()
+]
+
+USE_X_FORWARDED_HOST = _env_bool('USE_X_FORWARDED_HOST', True)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # Application definition
