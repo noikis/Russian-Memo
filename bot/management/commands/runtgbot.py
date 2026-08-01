@@ -1,8 +1,11 @@
 import os
 import logging
+from urllib.parse import urljoin
+
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from telegram import Update
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, WebAppInfo
 from telegram.constants import ParseMode
 from telegram.ext import Application, CommandHandler, ContextTypes
 
@@ -11,6 +14,10 @@ from bot.services.translation_service import TranslationService
 
 TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 logger = logging.getLogger(__name__)
+
+
+def _telegram_mini_app_url() -> str:
+    return urljoin(settings.PUBLIC_BASE_URL + "/", "account/tg_auth/")
 
 class Command(BaseCommand):
     help = "Run Telegram bot (polling)"
@@ -68,6 +75,17 @@ class Command(BaseCommand):
             response = service.translate(text)
             await update.message.reply_text(response)
 
+        async def app_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+            keyboard = InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        text="Open app",
+                        web_app=WebAppInfo(url=_telegram_mini_app_url()),
+                    )
+                ]
+            ])
+            await update.message.reply_text("Open the mini app.", reply_markup=keyboard)
+
 
         async def on_error(update: object, context: ContextTypes.DEFAULT_TYPE) -> None:
             logger.exception("Unhandled exception while processing update", exc_info=context.error)
@@ -77,5 +95,6 @@ class Command(BaseCommand):
 
         app.add_handler(CommandHandler("define", define))
         app.add_handler(CommandHandler("translate", translate))
+        app.add_handler(CommandHandler("app", app_command))
         app.add_error_handler(on_error)
         app.run_polling()

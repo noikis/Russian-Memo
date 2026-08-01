@@ -17,22 +17,22 @@ services:
         target: /app
     restart: unless-stopped
     
-  # tgbot:
-  #   build: .developping while using docker best practices 
-  #   container_name: memo-tgbot
-  #   command: python manage.py runtgbot
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - .:/app
-  #   restart: unless-stopped
+  tgbot:
+    build: .
+    container_name: memo-tgbot
+    command: python manage.py runtgbot
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: unless-stopped
 
-  # vkbot:
-  #   build: .
-  #   container_name: memo-vkbot
-  #   command: python manage.py runvkbot
-  #   env_file:
-  #     - .env
-  #   volumes:
-  #     - .:/app
-  #   restart: unless-stopped
+  vkbot:
+    build: .
+    container_name: memo-vkbot
+    command: python manage.py runvkbot
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: unless-stopped

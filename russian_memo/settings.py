@@ -26,7 +26,14 @@ SECRET_KEY = '(^zh-0=n*kad5k@=5_v*@x!-^xm0@4t2bae==gik3bt(z#!#h7'
 DEBUG = True
 
 
-ALLOWED_HOSTS = [os.environ.get('HOST', 'localhost'), '127.0.0.1', 'localhost']
+HOST = os.environ.get('HOST', 'localhost')
+PUBLIC_BASE_URL = (
+    os.environ.get('PUBLIC_BASE_URL')
+    or os.environ.get('TELEGRAM_LOGIN_HOST')
+    or ('http://localhost:8000' if HOST.startswith(('localhost', '127.0.0.1')) else f'https://{HOST}')
+).rstrip('/')
+
+ALLOWED_HOSTS = [HOST, '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -209,3 +216,7 @@ except (TypeError, ValueError):
 VK_APP_ID = os.environ.get('VK_APP_ID')
 VK_APP_SECRET = os.environ.get('VK_APP_SECRET')
 VK_OAUTH_VERSION = os.environ.get('VK_OAUTH_VERSION', '5.131')
+try:
+    VK_MINI_APP_AUTH_MAX_AGE = int(os.environ.get('VK_MINI_APP_AUTH_MAX_AGE', 60 * 60))
+except (TypeError, ValueError):
+    VK_MINI_APP_AUTH_MAX_AGE = 60 * 60

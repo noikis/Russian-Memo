@@ -1,5 +1,6 @@
 import hashlib
 import hmac
+import base64
 import secrets
 import time
 import json
@@ -32,6 +33,10 @@ VK_PROVIDER = "vk"
 
 def _vk_is_configured():
     return bool(getattr(settings, 'VK_APP_ID', None) and getattr(settings, 'VK_APP_SECRET', None))
+
+
+def _vk_mini_app_is_configured():
+    return _vk_is_configured()
 
 
 def _with_next_param(base_url: str, next_url: str):
@@ -248,6 +253,53 @@ def _normalize_vk_profile(profile: dict):
     }
 
 
+def _validate_vk_mini_app_launch_params(launch_params_raw: str):
+    if not _vk_mini_app_is_configured():
+        return False, 'VK Mini App auth is not configured.'
+    if not launch_params_raw:
+        return False, 'Missing VK Mini App launch parameters.'
+
+    parsed = urllib.parse.parse_qs(
+        launch_params_raw.lstrip('?'),
+        keep_blank_values=True,
+    )
+    payload = {key: values[0] for key, values in parsed.items()}
+    received_sign = payload.get('sign')
+    if not received_sign:
+        return False, 'Missing VK Mini App signature.'
+
+    vk_params = {
+        key: value
+        for key, value in payload.items()
+        if key.startswith('vk_')
+    }
+    sign_payload = urllib.parse.urlencode(dict(sorted(vk_params.items())))
+    computed_sign = base64.urlsafe_b64encode(
+        hmac.new(
+            settings.VK_APP_SECRET.encode(),
+            sign_payload.encode(),
+            hashlib.sha256,
+        ).digest()
+    ).decode().rstrip('=')
+
+    if not hmac.compare_digest(computed_sign, received_sign):
+        return False, 'Invalid VK Mini App signature.'
+
+    if str(payload.get('vk_app_id')) != str(settings.VK_APP_ID):
+        return False, 'Invalid VK Mini App id.'
+
+    vk_user_id = _parse_int(payload.get('vk_user_id'))
+    if vk_user_id is None:
+        return False, 'Missing VK Mini App user id.'
+
+    vk_ts = _parse_int(payload.get('vk_ts'))
+    max_age = int(getattr(settings, 'VK_MINI_APP_AUTH_MAX_AGE', 60 * 60))
+    if vk_ts and max_age and (time.time() - vk_ts) > max_age:
+        return False, 'VK Mini App launch parameters expired.'
+
+    return True, payload
+
+
 def _make_unique_username(base: str):
     if not User.objects.filter(username=base).exists():
         return base
@@ -439,6 +491,42 @@ class TelegramMiniAppAuthPageView(TemplateView):
     Renders the mini-app auth bootstrap page that posts initData to the backend.
     """
     template_name = 'account/telegram_mini_app_auth.html'
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class VKMiniAppAuthView(View):
+    """
+    Auto-login for VK Mini App using signed launch parameters.
+    """
+
+    def post(self, request, *args, **kwargs):
+        launch_params_raw = request.POST.get('launch_params')
+        is_valid, data = _validate_vk_mini_app_launch_params(launch_params_raw)
+        if not is_valid:
+            return JsonResponse({'ok': False, 'error': data}, status=400)
+
+        profile = None
+        profile_raw = request.POST.get('profile')
+        if profile_raw:
+            try:
+                profile = json.loads(profile_raw)
+            except json.JSONDecodeError:
+                profile = None
+
+        user, error = _get_or_create_student_from_vk(data.get('vk_user_id'), profile)
+        if error:
+            return JsonResponse({'ok': False, 'error': error}, status=400)
+
+        auth.login(request, user)
+        redirect_url = str(reverse_lazy('quiz:quiz_list_student'))
+        return JsonResponse({'ok': True, 'redirect': redirect_url})
+
+
+class VKMiniAppAuthPageView(TemplateView):
+    """
+    Renders the mini-app auth bootstrap page that posts VK launch params.
+    """
+    template_name = 'account/vk_mini_app_auth.html'
 
 
 def vk_oauth_start(request):

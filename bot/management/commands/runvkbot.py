@@ -2,18 +2,47 @@
 import logging
 import os
 import re
+from urllib.parse import urljoin
 
 import vk_api
-from django.core.management.base import BaseCommand
+from django.conf import settings
+from django.core.management.base import BaseCommand, CommandError
 from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 from vk_api.keyboard import VkKeyboard
 
 from bot.services.dictionary_service import DictionaryService
 from bot.services.translation_service import TranslationService
 
-TOKEN = os.environ["VK_TOKEN"]
-GROUP_ID = int(os.environ["VK_GROUP_ID"])
 logger = logging.getLogger(__name__)
+
+
+def _get_vk_group_token() -> str:
+    token = os.environ.get("VK_GROUP_TOKEN") or os.environ.get("VK_TOKEN")
+    if not token:
+        raise CommandError(
+            "Missing VK bot token. Set VK_GROUP_TOKEN to the VK community access "
+            "token. VK_TOKEN is still accepted as a legacy alias."
+        )
+    return token
+
+
+def _get_vk_group_id() -> int:
+    group_id = os.environ.get("VK_GROUP_ID")
+    if not group_id:
+        raise CommandError("Missing VK_GROUP_ID for the VK bot.")
+
+    try:
+        return int(group_id)
+    except ValueError as exc:
+        raise CommandError("VK_GROUP_ID must be an integer.") from exc
+
+
+def _vk_mini_app_url() -> str:
+    return f"https://vk.com/app{settings.VK_APP_ID}"
+
+
+def _vk_web_app_url() -> str:
+    return urljoin(settings.PUBLIC_BASE_URL + "/", "account/vk_app/")
 
 
 class Command(BaseCommand):
@@ -68,9 +97,9 @@ class Command(BaseCommand):
         logger.info("VK bot started")
         print("VK bot started")
 
-        vk_session = vk_api.VkApi(token=TOKEN)
+        vk_session = vk_api.VkApi(token=_get_vk_group_token())
         vk = vk_session.get_api()
-        longpoll = VkBotLongPoll(vk_session, GROUP_ID)
+        longpoll = VkBotLongPoll(vk_session, _get_vk_group_id())
 
         dictionary_service = DictionaryService()
         translation_service = TranslationService()
@@ -113,10 +142,19 @@ class Command(BaseCommand):
 
                 if text.startswith("/app"):
                     keyboard = VkKeyboard(one_time=False)
-                    keyboard.add_openlink_button(
-                        label="Open site",
-                        link="https://www.google.com/",
-                    )
+                    group_id = _get_vk_group_id()
+                    if hasattr(keyboard, "add_vkapps_button"):
+                        keyboard.add_vkapps_button(
+                            label="Open app",
+                            app_id=int(settings.VK_APP_ID),
+                            owner_id=-group_id,
+                            hash="",
+                        )
+                    else:
+                        keyboard.add_openlink_button(
+                            label="Open app",
+                            link=_vk_mini_app_url() if settings.VK_APP_ID else _vk_web_app_url(),
+                        )
                     self._send_message(
                         vk,
                         peer_id,
