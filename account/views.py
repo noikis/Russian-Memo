@@ -443,6 +443,30 @@ def _get_or_create_student_from_telegram(user_data):
     return user, None
 
 
+def _parse_json_object(value: str):
+    if not value:
+        return None
+    try:
+        parsed = json.loads(value)
+    except json.JSONDecodeError:
+        return None
+    return parsed if isinstance(parsed, dict) else None
+
+
+def _login_vk_mini_app_user(request, launch_params_raw: str, profile_raw: str = None):
+    is_valid, data = _validate_vk_mini_app_launch_params(launch_params_raw)
+    if not is_valid:
+        return None, data
+
+    profile = _parse_json_object(profile_raw)
+    user, error = _get_or_create_student_from_vk(data.get('vk_user_id'), profile)
+    if error:
+        return None, error
+
+    auth.login(request, user)
+    return user, None
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class TelegramAuthView(View):
     """
@@ -507,33 +531,30 @@ class VKMiniAppAuthView(View):
     """
 
     def post(self, request, *args, **kwargs):
-        launch_params_raw = request.POST.get('launch_params')
-        is_valid, data = _validate_vk_mini_app_launch_params(launch_params_raw)
-        if not is_valid:
-            return JsonResponse({'ok': False, 'error': data}, status=400)
-
-        profile = None
-        profile_raw = request.POST.get('profile')
-        if profile_raw:
-            try:
-                profile = json.loads(profile_raw)
-            except json.JSONDecodeError:
-                profile = None
-
-        user, error = _get_or_create_student_from_vk(data.get('vk_user_id'), profile)
+        user, error = _login_vk_mini_app_user(
+            request,
+            request.POST.get('launch_params'),
+            request.POST.get('profile'),
+        )
         if error:
             return JsonResponse({'ok': False, 'error': error}, status=400)
 
-        auth.login(request, user)
         redirect_url = str(reverse_lazy('quiz:quiz_list_student'))
         return JsonResponse({'ok': True, 'redirect': redirect_url})
 
 
-class VKMiniAppAuthPageView(TemplateView):
+class VKMiniAppAuthPageView(View):
     """
-    Renders the mini-app auth bootstrap page that posts VK launch params.
+    Logs in VK Mini App users directly from signed launch params.
     """
-    template_name = 'account/vk_mini_app_auth.html'
+
+    def get(self, request, *args, **kwargs):
+        launch_params_raw = request.META.get('QUERY_STRING', '')
+        user, error = _login_vk_mini_app_user(request, launch_params_raw)
+        if error:
+            messages.error(request, error)
+            return redirect('account:login')
+        return redirect('quiz:quiz_list_student')
 
 
 def vk_oauth_start(request):
