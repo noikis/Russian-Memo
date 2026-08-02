@@ -11,6 +11,13 @@ def _env_bool(name: str, default: bool = False) -> bool:
         return default
     return value.strip().lower() in {'1', 'true', 'yes', 'on'}
 
+
+def _env_samesite(name: str, default: str = 'Lax') -> str:
+    value = os.environ.get(name, default).strip()
+    if value.lower() in {'lax', 'strict'}:
+        return value.capitalize()
+    return default
+
 # Load environment variables from .env if present (simple parser to avoid extra deps)
 ENV_PATH = Path(BASE_DIR) / '.env'
 if ENV_PATH.is_file():
@@ -48,6 +55,10 @@ ALLOWED_HOSTS = [
 
 USE_X_FORWARDED_HOST = _env_bool('USE_X_FORWARDED_HOST', True)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = _env_bool('SESSION_COOKIE_SECURE', not DEBUG)
+CSRF_COOKIE_SECURE = _env_bool('CSRF_COOKIE_SECURE', not DEBUG)
+SESSION_COOKIE_SAMESITE = _env_samesite('SESSION_COOKIE_SAMESITE')
+CSRF_COOKIE_SAMESITE = _env_samesite('CSRF_COOKIE_SAMESITE')
 
 
 # Application definition
