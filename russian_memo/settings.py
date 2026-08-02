@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 
+from django import VERSION as DJANGO_VERSION
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -12,11 +14,29 @@ def _env_bool(name: str, default: bool = False) -> bool:
     return value.strip().lower() in {'1', 'true', 'yes', 'on'}
 
 
-def _env_samesite(name: str, default: str = 'Lax') -> str:
+def _disabled_samesite_value():
+    return False if DJANGO_VERSION >= (3, 1) else None
+
+
+def _env_samesite(name: str, default: str = 'Lax'):
     value = os.environ.get(name, default).strip()
+    if value.lower() in {'0', 'false', 'no', 'off'}:
+        return _disabled_samesite_value()
+    if value.lower() == 'none':
+        # Django < 3.1 cannot emit SameSite=None directly.
+        return (
+            'None'
+            if DJANGO_VERSION >= (3, 1)
+            else _disabled_samesite_value()
+        )
     if value.lower() in {'lax', 'strict'}:
         return value.capitalize()
     return default
+
+
+def _env_samesite_is_none(name: str, default: str = 'Lax') -> bool:
+    return os.environ.get(name, default).strip().lower() == 'none'
+
 
 # Load environment variables from .env if present (simple parser to avoid extra deps)
 ENV_PATH = Path(BASE_DIR) / '.env'
@@ -55,10 +75,26 @@ ALLOWED_HOSTS = [
 
 USE_X_FORWARDED_HOST = _env_bool('USE_X_FORWARDED_HOST', True)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SESSION_COOKIE_SECURE = _env_bool('SESSION_COOKIE_SECURE', not DEBUG)
-CSRF_COOKIE_SECURE = _env_bool('CSRF_COOKIE_SECURE', not DEBUG)
-SESSION_COOKIE_SAMESITE = _env_samesite('SESSION_COOKIE_SAMESITE')
-CSRF_COOKIE_SAMESITE = _env_samesite('CSRF_COOKIE_SAMESITE')
+COOKIE_SECURE_DEFAULT = PUBLIC_BASE_URL.startswith('https://')
+COOKIE_SAMESITE_DEFAULT = 'None' if COOKIE_SECURE_DEFAULT else 'Lax'
+SESSION_COOKIE_SECURE = _env_bool('SESSION_COOKIE_SECURE', COOKIE_SECURE_DEFAULT)
+CSRF_COOKIE_SECURE = _env_bool('CSRF_COOKIE_SECURE', COOKIE_SECURE_DEFAULT)
+SESSION_COOKIE_SAMESITE_NONE = _env_samesite_is_none(
+    'SESSION_COOKIE_SAMESITE',
+    COOKIE_SAMESITE_DEFAULT,
+)
+CSRF_COOKIE_SAMESITE_NONE = _env_samesite_is_none(
+    'CSRF_COOKIE_SAMESITE',
+    COOKIE_SAMESITE_DEFAULT,
+)
+SESSION_COOKIE_SAMESITE = _env_samesite(
+    'SESSION_COOKIE_SAMESITE',
+    COOKIE_SAMESITE_DEFAULT,
+)
+CSRF_COOKIE_SAMESITE = _env_samesite(
+    'CSRF_COOKIE_SAMESITE',
+    COOKIE_SAMESITE_DEFAULT,
+)
 
 
 # Application definition
@@ -83,6 +119,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
    # 'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'russian_memo.middleware.SameSiteNoneCompatMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "django.middleware.locale.LocaleMiddleware",
     'django.middleware.common.CommonMiddleware',
@@ -149,7 +186,7 @@ ACCOUNT_EMAIL_REQUIRED = False
 
 AUTH_USER_MODEL = 'account.User'
 
-# LOGIN_URL = 'account/login/'
+LOGIN_URL = '/account/login/'
 
 LOGOUT_URL = 'logout'
 
